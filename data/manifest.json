@@ -1,0 +1,65 @@
+{
+  "updated": "2026-10-25",
+  "datasets": [
+    {
+      "id": "company",
+      "path": "data/company.json",
+      "status": "ok",
+      "description": "Юрлицо, холдинг, штат, финансы, площадки"
+    },
+    {
+      "id": "tech-params",
+      "path": "data/tech-params.json",
+      "status": "ok",
+      "description": "Параметры группировки Рассвет и канала связи"
+    },
+    {
+      "id": "spacecraft",
+      "path": "data/spacecraft.json",
+      "status": "ok",
+      "description": "Внешний вид, подсистемы, ДУ, сборка, видео"
+    },
+    {
+      "id": "problems-goals",
+      "path": "data/problems-goals.json",
+      "status": "ok",
+      "description": "Задачи сервиса и инженерные вызовы"
+    },
+    {
+      "id": "finance",
+      "path": "data/finance.json",
+      "status": "ok",
+      "description": "P&L, баланс, доли, CEO, программа до 2030"
+    },
+    {
+      "id": "developers",
+      "path": "data/developers.json",
+      "status": "ok",
+      "description": "Техлиды, департаменты, направления R&D, партнёры"
+    },
+    {
+      "id": "coverage-orbit-faq",
+      "path": "data/coverage-orbit-faq.json",
+      "status": "ok",
+      "description": "Орбита, покрытие 31 КА, слепые зоны, чужие спутники"
+    },
+    {
+      "id": "environment-effects",
+      "path": "data/environment-effects.json",
+      "status": "ok",
+      "description": "Классы орбит и воздействия среды (verified vs DeepSeek)"
+    },
+    {
+      "id": "propulsion-detail",
+      "path": "data/propulsion-detail.json",
+      "status": "ok",
+      "description": "Плазменная ДУ: принцип, cadence, создатели"
+    },
+    {
+      "id": "sources",
+      "path": "data/sources.json",
+      "status": "ok",
+      "description": "Публичные источники"
+    }
+  ]
+}
