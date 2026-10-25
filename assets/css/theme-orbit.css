@@ -20,6 +20,8 @@
   --font-display: "Unbounded", system-ui, sans-serif;
   --font-body: "Onest", system-ui, sans-serif;
   --glow-crimson: rgba(224, 32, 32, 0.35);
+  --shell: 1120px;
+  --gutter: 1.5rem;
 }
 
 body {
@@ -203,7 +205,6 @@ body {
 
 .journey a:hover {
   border-color: var(--crimson);
-  transform: translateY(-2px);
 }
 
 .journey strong {
@@ -972,4 +973,160 @@ body {
     transition: none;
     transform: none;
   }
+}
+
+/* ===== Layout lock: одна ширина, одни поля, без «танца» ===== */
+.topbar {
+  padding-left: max(var(--gutter), calc((100% - var(--shell)) / 2));
+  padding-right: max(var(--gutter), calc((100% - var(--shell)) / 2));
+}
+
+.hero-inner,
+.journey,
+.stage-wrap,
+.panel-grid,
+.stats,
+.block:not(.block--tint),
+.orbit-theater,
+.section-ink .inner {
+  width: 100%;
+  max-width: var(--shell);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+  box-sizing: border-box;
+}
+
+.block--tint {
+  max-width: none;
+  width: 100%;
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+  box-sizing: border-box;
+}
+
+.block--tint > .block-head,
+.block--tint > .section-label,
+.block--tint > .problem-grid,
+.block--tint > .challenge-list,
+.block--tint > .block-note,
+.block--tint > .dev-stats,
+.block--tint > .dir-grid,
+.block--tint > .card {
+  max-width: var(--shell);
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+/* Вложенные сетки не добавляют вторые поля */
+.block .panel-grid,
+.block .finance-grid,
+.block .sat-extra,
+.block .sat-layout,
+.block .insight-row,
+.block .ownership-card,
+.block .ceo-card,
+.stage-wrap .block-head,
+.orbit-theater .block-head,
+.orbit-theater .orbit-shell,
+.orbit-theater .problem-grid,
+.orbit-theater .block-note {
+  max-width: none;
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.journey a,
+.problem-card,
+.dir-item,
+.card,
+.stat,
+.own-step,
+.challenge,
+.insight {
+  transform: none !important;
+}
+
+.journey a:hover,
+.problem-card:hover,
+.dir-item:hover,
+.card:hover {
+  transform: none !important;
+}
+
+.sat-layout,
+.panel-grid,
+.finance-grid,
+.orbit-shell,
+.insight-row,
+.problem-grid,
+.challenge-list,
+.dir-grid,
+.dev-stats,
+.stats,
+.ownership-steps,
+.journey {
+  align-items: stretch;
+}
+
+.ownership-steps {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 900px) {
+  .ownership-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .ownership-steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+.orbit-shell {
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.65fr);
+  gap: 1rem;
+}
+
+.orbit-side {
+  min-width: 0;
+}
+
+.orbit-controls {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.orbit-controls .btn {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.block-head h2,
+.orbit-theater .block-head h2,
+.stage-wrap .block-head h2 {
+  max-width: none;
+}
+
+.block-lead {
+  max-width: 62ch;
+}
+
+.stage-wrap,
+.orbit-theater,
+.block:not(.block--tint) {
+  margin-bottom: 2.5rem;
+}
+
+.panel-grid,
+.stats {
+  margin-bottom: 2.5rem;
 }
