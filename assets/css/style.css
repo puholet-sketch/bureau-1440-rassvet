@@ -425,31 +425,52 @@ body {
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.75rem;
   max-width: 1200px;
   margin: 0 auto 3rem;
   padding: 0 1.5rem;
+  align-items: stretch;
+}
+
+@media (max-width: 900px) {
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .stats {
+    grid-template-columns: 1fr;
+  }
 }
 
 .stat {
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 1rem 1.1rem;
+  padding: 1.1rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 6.75rem;
+  height: 100%;
+  box-sizing: border-box;
 }
 
 .stat .v {
   font-family: var(--font-display);
-  font-size: 1.35rem;
+  font-size: 1.45rem;
   color: var(--ink);
-  margin: 0 0 0.2rem;
+  margin: 0 0 0.4rem;
+  line-height: 1.15;
 }
 
 .stat .l {
   font-size: 0.78rem;
   color: var(--muted);
-  margin: 0;
+  margin: auto 0 0;
+  line-height: 1.35;
+  min-height: 2.6em;
 }
 
 .section-ink {
@@ -514,8 +535,11 @@ body {
 .block--tint .section-label,
 .block--tint .problem-grid,
 .block--tint .challenge-list,
-.block--tint .block-note {
+.block--tint .block-note,
+.block--tint .dev-stats,
+.block--tint .dir-grid {
   max-width: 1200px;
+  width: 100%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -646,16 +670,39 @@ body {
 
 .problem-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.85rem;
   margin-bottom: 2rem;
+  align-items: stretch;
+}
+
+@media (max-width: 960px) {
+  .problem-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .problem-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .problem-card {
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 1rem 1.1rem;
+  padding: 1.1rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+}
+
+.problem-card:hover {
+  border-color: rgba(224, 32, 32, 0.5);
+  transform: translateY(-2px);
 }
 
 .problem-card h4 {
@@ -663,35 +710,48 @@ body {
   font-size: 0.9rem;
   color: var(--ink);
   margin: 0 0 0.45rem;
+  line-height: 1.3;
 }
 
 .problem-card p {
   margin: 0 0 0.5rem;
   font-size: 0.85rem;
   color: var(--text);
+  line-height: 1.45;
 }
 
 .problem-card .solve {
-  margin: 0;
+  margin: auto 0 0;
+  padding-top: 0.55rem;
   font-size: 0.8rem;
   color: var(--crimson-deep);
+  border-top: 1px solid var(--line);
 }
 
 .challenge-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.65rem;
   margin-bottom: 1rem;
+  align-items: stretch;
+}
+
+@media (max-width: 800px) {
+  .challenge-list {
+    grid-template-columns: 1fr;
+  }
 }
 
 .challenge {
   background: var(--panel);
   border-left: 3px solid var(--crimson);
   border-radius: var(--radius);
-  padding: 0.75rem 1rem;
+  padding: 0.85rem 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.25rem;
+  height: 100%;
+  box-sizing: border-box;
 }
 
 .challenge strong {
@@ -841,28 +901,64 @@ body {
 
 .dev-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.75rem;
   margin-bottom: 1.75rem;
   max-width: 1200px;
+  width: 100%;
+  align-items: stretch;
+}
+
+@media (max-width: 900px) {
+  .dev-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .dev-stats {
+    grid-template-columns: 1fr;
+  }
 }
 
 .dir-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.65rem;
   margin-bottom: 1rem;
   max-width: 1200px;
+  width: 100%;
+  align-items: stretch;
+}
+
+@media (max-width: 960px) {
+  .dir-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .dir-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .dir-item {
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 0.75rem 0.9rem;
+  padding: 0.85rem 0.95rem;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.3rem;
+  height: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.dir-item:hover {
+  border-color: rgba(92, 225, 255, 0.35);
+  transform: translateY(-1px);
 }
 
 .dir-item strong {

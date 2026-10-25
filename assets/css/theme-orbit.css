@@ -444,8 +444,136 @@ body {
   opacity: 0.7;
 }
 
+/* Выравнивание и полировка карточек */
+.section-label {
+  margin-top: 0.35rem;
+  margin-bottom: 1.1rem;
+  letter-spacing: 0.1em;
+}
+
+.stat {
+  background: linear-gradient(165deg, rgba(26, 36, 52, 0.95), rgba(14, 20, 30, 0.98));
+  border-color: rgba(36, 48, 68, 0.95);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.stat:hover {
+  border-color: rgba(224, 32, 32, 0.4);
+}
+
+.problem-card,
+.dir-item,
+.challenge,
+.card {
+  background: linear-gradient(165deg, rgba(22, 30, 44, 0.96), rgba(14, 20, 30, 0.98));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.problem-card .solve {
+  border-top-color: rgba(36, 48, 68, 0.9);
+  color: var(--laser);
+}
+
+.panel-grid {
+  align-items: stretch;
+}
+
+.panel-grid > .card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.finance-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: stretch;
+}
+
+@media (max-width: 860px) {
+  .finance-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.finance-grid > .card {
+  height: 100%;
+}
+
+.ownership-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+@media (max-width: 900px) {
+  .ownership-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .ownership-steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+.own-step {
+  height: 100%;
+  background: rgba(11, 16, 24, 0.65);
+  border: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-height: 8.5rem;
+}
+
+.own-step p {
+  margin-top: 0;
+  flex: 1;
+}
+
+.plasma-flow {
+  background: rgba(11, 16, 24, 0.65);
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+.ttx-table .neg {
+  color: var(--ember);
+}
+
+.card {
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.card:hover {
+  border-color: rgba(92, 225, 255, 0.22);
+}
+
+.journey a {
+  height: 100%;
+  min-height: 4.6rem;
+}
+
+.orbit-metric {
+  background: linear-gradient(165deg, rgba(22, 30, 44, 0.96), rgba(14, 20, 30, 0.98));
+}
+
+.glossary-list li {
+  padding: 0.55rem 0 0.65rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .hero-bg {
+  .hero-bg,
+  .problem-card,
+  .dir-item,
+  .card,
+  .journey a {
     animation: none;
+    transition: none;
+    transform: none;
   }
 }
