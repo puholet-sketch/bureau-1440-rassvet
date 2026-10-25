@@ -19,7 +19,10 @@
         <span class="brand-mark" aria-hidden="true"></span>
         Бюро 1440 · Рассвет
       </a>
-      <nav>
+      <button type="button" class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="site-nav">
+        Меню
+      </button>
+      <nav id="site-nav">
         <a href="#scheme">Сигнал</a>
         <a href="#orbit">Орбита</a>
         <a href="#spacecraft">Спутник</a>
@@ -911,15 +914,22 @@
           <p class="section-tag">Орбитальный театр</p>
           <h2>Как спутники летят относительно Земли</h2>
           <p class="block-lead">
-            Приполярная орбита <strong>i≈82.3°</strong>: витки идут через Арктику и почти
-            через полюса — над Россией, океанами и чужими территориями. Свой интернет
-            ведёт только своя группировка; чужие КА — не «антенны».
+            Все точки на шаре — только модель группировки «Рассвет», не Starlink и не чужие КА.
+            Красная заливка — территория РФ. Жёлтое пятно — зона связи одного аппарата.
           </p>
         </div>
 
         <div class="orbit-shell">
           <div class="orbit-stage">
-            <canvas id="orbit-canvas" width="900" height="520" aria-label="Анимация Земли и спутников Рассвет"></canvas>
+            <canvas id="orbit-canvas" width="900" height="560" aria-label="Анимация Земли и спутников Рассвет"></canvas>
+            <aside class="orbit-hud" aria-label="Как читать картинку">
+              <span class="hud-chip"><i class="hud-dot hud-dot--sat"></i> Белые точки — КА «Рассвет»</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--laser"></i> Голубые линии — лазерная mesh</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--foot"></i> Жёлтое пятно — покрытие одного КА</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--ru"></i> Красный контур — Россия</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--track"></i> Пунктир — один виток i≈82.3°</span>
+            </aside>
+            <p class="orbit-live">В кадре: <strong id="orbit-count">—</strong> · учебная модель, не NORAD</p>
           </div>
           <div class="orbit-side">
             <div class="orbit-controls">
@@ -928,9 +938,9 @@
               <button type="button" class="btn btn--light" id="orbit-play">Пауза</button>
             </div>
             <div class="orbit-metric">
-              <div class="label">Мгновенное покрытие модели РФ</div>
+              <div class="label">Сколько красной РФ «освещено» сейчас</div>
               <p class="big" id="orbit-cover-pct">—</p>
-              <p id="orbit-blind">Считаем пятна elev ≥ 25°</p>
+              <p id="orbit-blind">Жёлтые пятна vs красный контур России</p>
               <p id="orbit-status" class="note" style="margin-top:0.65rem"></p>
             </div>
             <div class="orbit-callouts">

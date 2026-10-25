@@ -31,6 +31,7 @@ body {
 }
 
 .topbar {
+  position: sticky;
   background: rgba(11, 16, 24, 0.88);
   border-bottom-color: var(--line);
 }
@@ -45,6 +46,63 @@ body {
 
 .topbar a:hover {
   color: var(--ember);
+}
+
+.nav-toggle {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.45rem 0.7rem;
+  cursor: pointer;
+}
+
+@media (max-width: 860px) {
+  .nav-toggle {
+    display: inline-flex;
+  }
+
+  .topbar nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 0;
+    padding: 0.5rem 1.25rem 1rem;
+    background: rgba(11, 16, 24, 0.96);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .topbar nav.is-open {
+    display: flex;
+  }
+
+  .topbar nav a {
+    padding: 0.55rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+}
+
+.orbit-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  padding: 3px;
+  background: rgba(7, 10, 16, 0.55);
+  border: 1px solid var(--line);
+}
+
+.orbit-controls .btn {
+  border-radius: 0;
+  flex: 1;
+  justify-content: center;
+  min-width: 5.5rem;
 }
 
 .hero {
@@ -356,6 +414,85 @@ body {
   display: block;
   width: 100%;
   height: auto;
+}
+
+.orbit-hud {
+  position: absolute;
+  left: 0.75rem;
+  bottom: 2.4rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  max-width: min(36rem, calc(100% - 1.5rem));
+  pointer-events: none;
+}
+
+.hud-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.28rem 0.55rem;
+  background: rgba(7, 10, 16, 0.78);
+  border: 1px solid rgba(243, 241, 239, 0.12);
+  backdrop-filter: blur(8px);
+  font-size: 0.72rem;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.hud-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.hud-dot--sat {
+  background: #f3f1ef;
+  box-shadow: 0 0 6px rgba(243, 241, 239, 0.6);
+}
+
+.hud-dot--laser {
+  background: var(--laser);
+  border-radius: 1px;
+  height: 2px;
+  width: 12px;
+}
+
+.hud-dot--foot {
+  background: var(--rf);
+  opacity: 0.85;
+}
+
+.hud-dot--ru {
+  background: var(--ember);
+  border-radius: 1px;
+}
+
+.hud-dot--track {
+  background: transparent;
+  border: 1px dashed var(--laser);
+  border-radius: 0;
+  height: 0;
+  width: 12px;
+}
+
+.orbit-live {
+  position: absolute;
+  right: 0.75rem;
+  top: 0.75rem;
+  margin: 0;
+  padding: 0.3rem 0.55rem;
+  background: rgba(7, 10, 16, 0.72);
+  border: 1px solid rgba(243, 241, 239, 0.1);
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.orbit-live strong {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 600;
 }
 
 .orbit-side {
