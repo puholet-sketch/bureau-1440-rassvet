@@ -1,0 +1,451 @@
+/* Orbital Dawn — космический слой поверх базовых токенов */
+:root {
+  --ink: #f3f1ef;
+  --text: #c8c4c0;
+  --muted: #8a8580;
+  --paper: #0b1018;
+  --line: #243044;
+  --crimson: #e02020;
+  --ember: #fb5a5a;
+  --crimson-deep: #a01010;
+  --space: #070a10;
+  --space-mid: #121a28;
+  --laser: #5ce1ff;
+  --rf: #ffb020;
+  --ground: #3d7a5a;
+  --sat: #e8ecf2;
+  --panel: rgba(18, 26, 40, 0.92);
+  --panel-solid: #121a28;
+  --radius: 2px;
+  --font-display: "Unbounded", system-ui, sans-serif;
+  --font-body: "Onest", system-ui, sans-serif;
+  --glow-crimson: rgba(224, 32, 32, 0.35);
+}
+
+body {
+  background: var(--paper);
+  color: var(--text);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(192, 0, 0, 0.18), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 100% 20%, rgba(92, 225, 255, 0.06), transparent 50%);
+}
+
+.topbar {
+  background: rgba(11, 16, 24, 0.88);
+  border-bottom-color: var(--line);
+}
+
+.brand {
+  color: var(--ink);
+}
+
+.topbar a {
+  color: var(--muted);
+}
+
+.topbar a:hover {
+  color: var(--ember);
+}
+
+.hero {
+  position: relative;
+  max-width: none;
+  padding: 0;
+  margin: 0 0 2rem;
+  min-height: min(72vh, 640px);
+  display: grid;
+  align-items: end;
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(7, 10, 16, 0.25) 0%, rgba(7, 10, 16, 0.75) 55%, #0b1018 100%),
+    url("../img/hero-orbit-dawn.jpg") center / cover no-repeat;
+  transform: scale(1.02);
+  animation: hero-drift 28s ease-in-out infinite alternate;
+}
+
+@keyframes hero-drift {
+  from {
+    transform: scale(1.02) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.06) translate3d(-1.5%, 1%, 0);
+  }
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 4rem 1.5rem 2.5rem;
+}
+
+.hero-kicker {
+  color: var(--ember);
+}
+
+.hero h1 {
+  color: var(--ink);
+  max-width: 16ch;
+  text-shadow: 0 8px 40px rgba(0, 0, 0, 0.55);
+}
+
+.hero-lead {
+  color: rgba(243, 241, 239, 0.78);
+  max-width: 46ch;
+}
+
+.btn--ghost {
+  border-color: rgba(243, 241, 239, 0.28);
+  color: var(--ink);
+}
+
+.btn--ghost:hover {
+  border-color: var(--ember);
+  color: var(--ember);
+}
+
+.btn--light {
+  background: rgba(243, 241, 239, 0.08);
+  border: 1px solid rgba(243, 241, 239, 0.2);
+  color: var(--ink);
+}
+
+.journey {
+  max-width: 1200px;
+  margin: 0 auto 1.5rem;
+  padding: 0 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+@media (max-width: 900px) {
+  .journey {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.journey a {
+  display: block;
+  padding: 0.85rem 1rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.journey a:hover {
+  border-color: var(--crimson);
+  transform: translateY(-2px);
+}
+
+.journey strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  color: var(--ink);
+  margin-bottom: 0.25rem;
+}
+
+.journey span {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.section-tag {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ember);
+  margin-bottom: 0.5rem;
+}
+
+.block-head h2,
+.card h2,
+.section-ink h2 {
+  color: var(--ink);
+}
+
+.block-lead,
+.sub,
+.note,
+.block-note {
+  color: var(--muted);
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--text);
+}
+
+.card a {
+  color: var(--laser);
+}
+
+.stage {
+  background: linear-gradient(180deg, #070a10 0%, #121a28 55%, #1a2838 100%);
+  border-color: var(--line);
+  box-shadow: 0 0 0 1px rgba(92, 225, 255, 0.04), 0 24px 80px rgba(0, 0, 0, 0.45);
+}
+
+.stats {
+  background: transparent;
+  border-color: transparent;
+}
+
+.stat {
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+
+.stat .v {
+  color: var(--ink);
+}
+
+.stat .l {
+  color: var(--muted);
+}
+
+.block--tint {
+  background: #0e1520;
+  border-color: var(--line);
+}
+
+.problem-card,
+.challenge,
+.dir-item {
+  background: var(--panel);
+  border-color: var(--line);
+}
+
+.problem-card h4,
+.challenge strong,
+.dir-item strong,
+.card-h3 {
+  color: var(--ink);
+}
+
+.problem-card p,
+.challenge span,
+.dir-item span {
+  color: var(--text);
+}
+
+.problem-card .solve {
+  color: var(--laser);
+}
+
+.ttx-table {
+  background: var(--panel-solid);
+  color: var(--text);
+}
+
+.ttx-table th {
+  background: var(--crimson);
+  color: #fff;
+}
+
+.ttx-table td {
+  border-color: var(--line);
+}
+
+.ttx-table tr:nth-child(even) td {
+  background: rgba(224, 32, 32, 0.06);
+}
+
+.section-ink {
+  background: #05070c;
+  border-top: 1px solid var(--line);
+}
+
+.section-label {
+  color: var(--ember);
+}
+
+.steps button {
+  background: transparent;
+  border-color: var(--line);
+  color: var(--text);
+}
+
+.steps button.is-active {
+  border-color: var(--crimson);
+  background: rgba(224, 32, 32, 0.12);
+}
+
+.steps strong {
+  color: var(--ink);
+}
+
+.steps small {
+  color: var(--muted);
+}
+
+.params dt {
+  color: var(--muted);
+}
+
+.params dd {
+  color: var(--ink);
+}
+
+.foot {
+  color: var(--muted);
+  border-top-color: var(--line);
+}
+
+.term {
+  border-bottom-color: var(--ember);
+}
+
+.term-tip {
+  background: #1a2330;
+  border-left-color: var(--crimson);
+  color: #f3f1ef;
+}
+
+.glossary-list li {
+  border-bottom-color: var(--line);
+}
+
+.glossary-list strong {
+  color: var(--ink);
+}
+
+/* Orbit theater */
+.orbit-theater {
+  max-width: 1200px;
+  margin: 0 auto 3rem;
+  padding: 0 1.5rem;
+}
+
+.orbit-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.7fr);
+  gap: 1rem;
+  align-items: stretch;
+}
+
+@media (max-width: 900px) {
+  .orbit-shell {
+    grid-template-columns: 1fr;
+  }
+}
+
+.orbit-stage {
+  position: relative;
+  background: #070a10;
+  border: 1px solid var(--line);
+  overflow: hidden;
+  min-height: 420px;
+}
+
+.orbit-stage canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.orbit-side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.orbit-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.orbit-controls button.is-active {
+  background: var(--crimson);
+  color: #fff;
+  border-color: var(--crimson);
+}
+
+.orbit-metric {
+  padding: 1rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+
+.orbit-metric .big {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--ink);
+  margin: 0.2rem 0;
+  line-height: 1;
+}
+
+.orbit-metric .label {
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.orbit-metric p {
+  margin: 0.5rem 0 0;
+  font-size: 0.88rem;
+  color: var(--text);
+}
+
+.orbit-callouts {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.orbit-callout {
+  padding: 0.75rem 0.9rem;
+  border-left: 3px solid var(--crimson);
+  background: rgba(224, 32, 32, 0.08);
+  font-size: 0.88rem;
+}
+
+.orbit-callout strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ember);
+  margin-bottom: 0.25rem;
+}
+
+.signal-path {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(92, 225, 255, 0.06);
+  border: 1px solid rgba(92, 225, 255, 0.18);
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  color: var(--ink);
+}
+
+.signal-path .sep {
+  color: var(--laser);
+  opacity: 0.7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-bg {
+    animation: none;
+  }
+}

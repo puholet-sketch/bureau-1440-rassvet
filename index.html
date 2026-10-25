@@ -11,6 +11,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="assets/css/style.css" />
+    <link rel="stylesheet" href="assets/css/theme-orbit.css" />
   </head>
   <body>
     <header class="topbar">
@@ -19,35 +20,62 @@
         Бюро 1440 · Рассвет
       </a>
       <nav>
-        <a href="#scheme">Схема</a>
+        <a href="#scheme">Сигнал</a>
+        <a href="#orbit">Орбита</a>
         <a href="#spacecraft">Спутник</a>
         <a href="#problems">Задачи</a>
-        <a href="#finance">Финансы</a>
         <a href="#developers">Команда</a>
-        <a href="#coverage">Покрытие</a>
-        <a href="#environment">Среда</a>
-        <a href="#propulsion">ДУ</a>
-        <a href="#facts">Факты</a>
+        <a href="#finance">Досье</a>
         <a href="#glossary">Термины</a>
       </nav>
     </header>
 
     <main id="top">
       <section class="hero">
-        <p class="hero-kicker">Низкоорбитальная группировка · 5G NTN · лазерная ISL</p>
-        <h1>От телефона до спутников и обратно</h1>
-        <p class="hero-lead">
-          Динамическая схема всех звеньев сервиса «Рассвет»: абонентский терминал,
-          орбитальная 5G-станция, лазерная mesh между КА, шлюз на Земле и ЦУП.
-          Клик по узлу — полные параметры.
-        </p>
-        <div class="hero-actions">
-          <button type="button" class="btn btn--primary" id="btn-play">Пауза анимации</button>
-          <a class="btn btn--ghost" href="docs/architecture.md">Текстовая архитектура</a>
+        <div class="hero-bg" role="img" aria-label="Рассвет над Землёй и лазерная mesh спутников"></div>
+        <div class="hero-inner">
+          <p class="hero-kicker">LEO · 5G NTN · лазерная ISL · плазменная ДУ</p>
+          <h1>Рассвет над Землёй</h1>
+          <p class="hero-lead">
+            Как пакет данных взлетает с телефона на орбиту, прыгает по лазерной mesh
+            между КА и возвращается через шлюз — и почему ~31 спутника ещё не покрывают
+            всю Россию.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn--primary" href="#scheme">Смотреть путь сигнала</a>
+            <a class="btn btn--ghost" href="#orbit">Орбита и слепые зоны</a>
+          </div>
         </div>
       </section>
 
+      <nav class="journey" aria-label="Маршрут по досье">
+        <a href="#scheme"><strong>01 · Сигнал</strong><span>Телефон → КА → шлюз</span></a>
+        <a href="#orbit"><strong>02 · Орбита</strong><span>Покрытие РФ и чужие земли</span></a>
+        <a href="#spacecraft"><strong>03 · Аппарат</strong><span>ТТХ Рассвет-3</span></a>
+        <a href="#finance"><strong>04 · Досье</strong><span>Деньги, люди, среда</span></a>
+      </nav>
+
       <section class="stage-wrap" id="scheme" aria-label="Анимированная схема связи">
+        <div class="block-head" style="padding: 0 0 1rem">
+          <p class="section-tag">Путь сигнала</p>
+          <h2 style="margin:0;font-family:var(--font-display);color:var(--ink);font-size:clamp(1.25rem,2.5vw,1.75rem)">
+            От телефона до интернета за один hop-пакет
+          </h2>
+          <p class="block-lead" style="margin-top:0.65rem">
+            Белая точка — ваш пакет. Клик по узлу открывает параметры справа.
+          </p>
+          <div class="signal-path" aria-hidden="true">
+            <span>Устройство</span><span class="sep">→</span>
+            <span>АФАР</span><span class="sep">→</span>
+            <span>КА</span><span class="sep">→</span>
+            <span>лазер ISL</span><span class="sep">→</span>
+            <span>КА шлюза</span><span class="sep">→</span>
+            <span>Земля</span>
+            <span class="sep">·</span>
+            <span>ЦУП параллельно</span>
+          </div>
+          <button type="button" class="btn btn--light" id="btn-play">Пауза анимации</button>
+        </div>
         <div class="stage">
           <svg viewBox="0 0 1100 560" role="img" aria-labelledby="svgTitle svgDesc">
             <title id="svgTitle">Схема связи Бюро 1440</title>
@@ -723,90 +751,85 @@
         </p>
       </section>
 
-      <section class="block" id="coverage">
+      <section class="orbit-theater" id="orbit">
         <div class="block-head">
-          <p class="hero-kicker">Орбита и покрытие</p>
-          <h2>Падение, возврат, 31 спутник, слепые зоны</h2>
+          <p class="section-tag">Орбитальный театр</p>
+          <h2 style="margin:0;font-family:var(--font-display);color:var(--ink);font-size:clamp(1.25rem,2.5vw,1.75rem)">
+            Как спутники летят относительно Земли
+          </h2>
           <p class="block-lead">
-            LEO не «падает камнем» — он крутится вокруг Земли. Высоту держит плазменная ДУ.
-            Трёх десятков КА на всю РФ не хватает; чужие спутники антеннами не станут.
+            Приполярная орбита <strong>i≈82.3°</strong>: витки идут через Арктику и почти
+            через полюса — над Россией, океанами и чужими территориями. Свой интернет
+            ведёт только своя группировка; чужие КА — не «антенны».
           </p>
         </div>
 
-        <div class="problem-grid">
-          <article class="problem-card">
-            <h4>1. Как «возвращают» на орбиту</h4>
-            <p>
-              КА уже на орбите (~7,6 км/с, виток ~95 мин). Атмосфера медленно снимает
-              высоту. Плазменная ДУ даёт малые импульсы вдоль скорости — подъём с ~300 км
-              (недели–месяцы) и потом station-keeping. Не разворот «назад по траектории».
-            </p>
-            <p class="solve">Ресурс ~5 лет → управляемый сход и сгорание</p>
-          </article>
-          <article class="problem-card">
-            <h4>2. Хватает ли ~31 КА на РФ?</h4>
-            <p>
-              <strong>Нет.</strong> Цель &gt;250 / госплан 292. Один КА видит пятно
-              R≈885 км, но через минуты уходит за горизонт. 31 аппарат — ранняя серия,
-              короткие окна связи, не 24/7 по стране.
-            </p>
-            <p class="solve">Бесшовность = сотни КА в нескольких плоскостях</p>
-          </article>
-          <article class="problem-card">
-            <h4>3. Слепые зоны</h4>
-            <p>
-              Нет КА выше ~25° места · разрывы плоскостей · полярная орбита гуще у
-              Севера · сломанный/неподнявшийся борт · без ISL нужен ещё шлюз в зоне.
-            </p>
-            <p class="solve">Лечится числом КА, фазированием, лазером, handover</p>
-          </article>
-          <article class="problem-card">
-            <h4>4. Чужие спутники как антенны?</h4>
-            <p>
-              <strong>Нет.</strong> Starlink/др. не ретранслируют ваш 5G NTN. Лазер —
-              только свои терминалы. Пассивный «резонатор» в космосе для ШПД не работает.
-            </p>
-            <p class="solve">Гибрид: своя орбита + шлюзы + МегаФон на земле</p>
-          </article>
+        <div class="orbit-shell">
+          <div class="orbit-stage">
+            <canvas id="orbit-canvas" width="900" height="520" aria-label="Анимация Земли и спутников Рассвет"></canvas>
+          </div>
+          <div class="orbit-side">
+            <div class="orbit-controls">
+              <button type="button" class="btn btn--ghost is-active" data-orbit-mode="now">Сейчас ~31</button>
+              <button type="button" class="btn btn--ghost" data-orbit-mode="target">Цель ~252</button>
+              <button type="button" class="btn btn--light" id="orbit-play">Пауза</button>
+            </div>
+            <div class="orbit-metric">
+              <div class="label">Мгновенное покрытие модели РФ</div>
+              <p class="big" id="orbit-cover-pct">—</p>
+              <p id="orbit-blind">Считаем пятна elev ≥ 25°</p>
+              <p id="orbit-status" class="note" style="margin-top:0.65rem"></p>
+            </div>
+            <div class="orbit-callouts">
+              <div class="orbit-callout">
+                <strong>Хватает ли 31 на всю страну?</strong>
+                Нет. Короткие окна связи, не 24/7. Нужны сотни КА (цель &gt;250 / госплан 292).
+              </div>
+              <div class="orbit-callout">
+                <strong>Слепые зоны</strong>
+                Нет КА выше ~25° · разрывы плоскостей · дыры, если борт не поднялся.
+                Лечение: число КА × фазирование × ISL × handover.
+              </div>
+              <div class="orbit-callout">
+                <strong>Над чьей землёй летят?</strong>
+                Над всей Землёй в поясе наклонения: РФ, Арктика, Евразия, океаны,
+                Антарктика. Покрытие сервиса — где есть свои КА + терминал + право.
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="card" style="margin-top: 1rem">
-          <h3 class="card-h3">Порядок величин</h3>
-          <table class="ttx-table">
-            <thead>
-              <tr>
-                <th>Параметр</th>
-                <th>Значение</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Сейчас серийных (порядок)</td>
-                <td>~31</td>
-              </tr>
-              <tr>
-                <td>Нужно для сервиса</td>
-                <td>&gt;250 … 292 активных</td>
-              </tr>
-              <tr>
-                <td>Пятно одного КА (~510 км)</td>
-                <td>R ≈ 885 км</td>
-              </tr>
-              <tr>
-                <td>Скорость КА</td>
-                <td>~27 400 км/ч</td>
-              </tr>
-              <tr>
-                <td>Подъём 300→рабочая</td>
-                <td>недели–месяцы плазмой</td>
-              </tr>
-            </tbody>
-          </table>
-          <p class="note">
-            Подробно:
-            <a href="docs/coverage-orbit-faq.md">docs/coverage-orbit-faq.md</a>
-          </p>
+        <div class="problem-grid" style="margin-top: 1.25rem" id="coverage">
+          <article class="problem-card">
+            <h4>Высоту держит плазма, не «возврат назад»</h4>
+            <p>
+              КА уже на орбите (~7,6 км/с, виток ~95 мин). Drag снимает высоту; ДУ даёт
+              импульсы вдоль скорости — подъём с ~300 км и station-keeping.
+            </p>
+            <p class="solve">Ресурс ~5 лет → управляемый сход</p>
+          </article>
+          <article class="problem-card">
+            <h4>ITU-цель: 12 × 21 ≈ 252</h4>
+            <p>
+              Заявка: ~800 км, i=82.3°, 12 плоскостей по 21 КА. Альтернатива 60° —
+              уже &gt;1300 аппаратов. Сейчас на орбите порядок трёх десятков серийных.
+            </p>
+            <p class="solve">Пятно одного КА на ~510 км: R≈885 км</p>
+          </article>
+          <article class="problem-card">
+            <h4>Чужие спутники ≠ ретрансляторы</h4>
+            <p>
+              Starlink и др. не усиливают ваш 5G NTN. Лазер ISL — только свои терминалы.
+              Пассивный «резонатор» в космосе для ШПД не работает.
+            </p>
+            <p class="solve">Гибрид: своя орбита + шлюзы + МегаФон</p>
+          </article>
         </div>
+        <p class="note block-note">
+          Модель на канвасе — учебная иллюстрация фазирования, не штатный симулятор Бюро.
+          Источник фактов:
+          <a href="docs/coverage-orbit-faq.md">coverage-orbit-faq.md</a>
+        </p>
       </section>
 
       <section class="block block--tint" id="environment">
@@ -1028,5 +1051,6 @@
 
     <script src="assets/js/glossary.js"></script>
     <script src="assets/js/main.js"></script>
+    <script src="assets/js/orbit.js"></script>
   </body>
 </html>
