@@ -894,6 +894,71 @@ body {
   color: var(--crimson);
 }
 
+/* Термины — всплывающая подсказка */
+.term {
+  border-bottom: 1px dotted var(--crimson);
+  cursor: help;
+  color: inherit;
+  position: relative;
+}
+
+.term:focus {
+  outline: 2px solid var(--ember);
+  outline-offset: 2px;
+}
+
+.term-tip {
+  position: absolute;
+  z-index: 1000;
+  max-width: min(22rem, calc(100vw - 1.5rem));
+  padding: 0.55rem 0.75rem;
+  background: var(--ink);
+  color: #f3f1ef;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  line-height: 1.4;
+  border-left: 3px solid var(--crimson);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+}
+
+.term-tip[hidden] {
+  display: none;
+}
+
+.glossary-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.65rem;
+  columns: 1;
+}
+
+@media (min-width: 900px) {
+  .glossary-list {
+    columns: 2;
+    column-gap: 2rem;
+  }
+}
+
+.glossary-list li {
+  break-inside: avoid;
+  margin: 0 0 0.65rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.45;
+}
+
+.glossary-list strong {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--ink);
+  font-size: 0.82rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .laser-beam,
   .rf-beam {

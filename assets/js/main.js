@@ -112,6 +112,10 @@
 
   const hopDuration = 1600;
 
+  function gloss(el) {
+    if (typeof window.applyGlossary === "function" && el) window.applyGlossary(el);
+  }
+
   function renderSteps() {
     stepsEl.innerHTML = STEPS.map(
       (s) => `
@@ -125,6 +129,7 @@
         </button>
       </li>`
     ).join("");
+    gloss(stepsEl);
   }
 
   function renderParams(id) {
@@ -141,6 +146,7 @@
       </div>`
       )
       .join("");
+    gloss(document.getElementById("panel"));
   }
 
   function setActive(id, fromUser = false) {
