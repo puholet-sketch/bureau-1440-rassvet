@@ -566,6 +566,244 @@ body {
   padding: 0.55rem 0 0.65rem;
 }
 
+/* Единый каркас секций */
+.stage-wrap,
+.orbit-theater {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.stage-wrap .block-head h2,
+.orbit-theater .block-head h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  color: var(--ink);
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+}
+
+.insight-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+@media (max-width: 800px) {
+  .insight-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.insight {
+  padding: 1rem 1.1rem;
+  background: linear-gradient(165deg, rgba(22, 30, 44, 0.96), rgba(14, 20, 30, 0.98));
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--crimson);
+}
+
+.insight-k {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ember);
+  margin-bottom: 0.35rem;
+}
+
+.insight strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: var(--ink);
+  margin-bottom: 0.35rem;
+  line-height: 1.3;
+}
+
+.insight p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.chart-caption {
+  margin: 0 0 0.65rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.chart-bars {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.65rem;
+  align-items: end;
+  min-height: 160px;
+  margin-bottom: 0.5rem;
+  padding: 0.75rem 0.5rem 0.25rem;
+  background: rgba(7, 10, 16, 0.45);
+  border: 1px solid var(--line);
+}
+
+.chart-year {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  height: 100%;
+}
+
+.chart-year .cy {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  color: var(--muted);
+  order: 2;
+}
+
+.chart-pair {
+  display: flex;
+  gap: 0.25rem;
+  align-items: flex-end;
+  justify-content: center;
+  flex: 1;
+  width: 100%;
+  min-height: 120px;
+  order: 1;
+}
+
+.chart-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+  height: 100%;
+  gap: 0.25rem;
+}
+
+.chart-col i {
+  display: block;
+  width: 100%;
+  max-width: 22px;
+  border-radius: 2px 2px 0 0;
+  min-height: 4px;
+}
+
+.chart-col i.loss {
+  background: linear-gradient(180deg, var(--ember), var(--crimson));
+}
+
+.chart-col i.asset {
+  background: linear-gradient(180deg, #c8d0dc, #5ce1ff);
+}
+
+.chart-col em {
+  font-style: normal;
+  font-size: 0.58rem;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 0 0 1rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.chart-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.swatch-loss,
+.swatch-asset {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.swatch-loss {
+  background: var(--crimson);
+}
+
+.swatch-asset {
+  background: var(--laser);
+}
+
+.share-bars,
+.compare-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-bottom: 0.75rem;
+}
+
+.compare-bars {
+  padding: 0.75rem 0.85rem;
+  background: rgba(7, 10, 16, 0.4);
+  border: 1px solid var(--line);
+}
+
+.share-row {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr auto;
+  gap: 0.55rem;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.share-row span {
+  color: var(--muted);
+}
+
+.share-row strong {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  min-width: 2.8rem;
+  text-align: right;
+}
+
+.bar i.bar--muted {
+  background: #4a5568;
+}
+
+.steps button {
+  background: rgba(11, 16, 24, 0.55);
+  color: var(--text);
+}
+
+.steps button:hover,
+.steps button.is-active {
+  background: rgba(224, 32, 32, 0.12);
+  border-color: var(--crimson);
+}
+
+.ceo-card {
+  margin-bottom: 1.25rem;
+}
+
+.challenge-list {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 800px) {
+  .challenge-list {
+    grid-template-columns: 1fr;
+  }
+
+  .share-row {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+}
+
 .sat-diagram {
   display: flex;
   flex-direction: column;

@@ -56,12 +56,10 @@
       </nav>
 
       <section class="stage-wrap" id="scheme" aria-label="Анимированная схема связи">
-        <div class="block-head" style="padding: 0 0 1rem">
+        <div class="block-head">
           <p class="section-tag">Путь сигнала</p>
-          <h2 style="margin:0;font-family:var(--font-display);color:var(--ink);font-size:clamp(1.25rem,2.5vw,1.75rem)">
-            От телефона до интернета за один hop-пакет
-          </h2>
-          <p class="block-lead" style="margin-top:0.65rem">
+          <h2>От телефона до интернета за один hop-пакет</h2>
+          <p class="block-lead">
             Белая точка — ваш пакет. Клик по узлу открывает параметры справа.
           </p>
           <div class="signal-path" aria-hidden="true">
@@ -589,50 +587,105 @@
           </div>
         </div>
 
+        <div class="insight-row">
+          <div class="insight">
+            <span class="insight-k">Инвестфаза</span>
+            <strong>Убыток растёт быстрее выручки</strong>
+            <p>2024: выручка 0,5 млн ₽ при убытке ~3,4 млрд ₽ — типично для развёртывания LEO.</p>
+          </div>
+          <div class="insight">
+            <span class="insight-k">Баланс</span>
+            <strong>Активы ×10 за 3 года</strong>
+            <p>С ~3 млрд до ~34 млрд ₽ — капвложения в КА, производство, команду.</p>
+          </div>
+          <div class="insight">
+            <span class="insight-k">Программа → 2030</span>
+            <strong>~432 млрд ₽ план</strong>
+            <p>Бюджет ~24% · собственные ~76%. Не путать с годовой P&amp;L ООО.</p>
+          </div>
+        </div>
+
         <div class="panel-grid finance-grid">
           <div class="card">
             <h3 class="card-h3">P&amp;L и баланс (тыс. ₽)</h3>
-            <table class="ttx-table">
-              <thead>
-                <tr>
-                  <th>Год</th>
-                  <th>Выручка</th>
-                  <th>Чистая прибыль</th>
-                  <th>Активы</th>
-                  <th>Капитал</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>2021</td>
-                  <td>—</td>
-                  <td class="neg">−105 378</td>
-                  <td>3 180 055</td>
-                  <td class="neg">−104 378</td>
-                </tr>
-                <tr>
-                  <td>2022</td>
-                  <td>833</td>
-                  <td class="neg">−544 626</td>
-                  <td>5 757 415</td>
-                  <td>4 581 319</td>
-                </tr>
-                <tr>
-                  <td>2023</td>
-                  <td>750</td>
-                  <td class="neg">−1 748 116</td>
-                  <td>17 647 131</td>
-                  <td>15 523 495</td>
-                </tr>
-                <tr>
-                  <td>2024</td>
-                  <td>493</td>
-                  <td class="neg">−3 420 110</td>
-                  <td>34 137 192</td>
-                  <td>30 848 402</td>
-                </tr>
-              </tbody>
-            </table>
+            <p class="chart-caption">Убыток (красный) и активы (светлый) — одна шкала по модулю, тыс. ₽</p>
+            <div class="chart-bars" role="img" aria-label="Динамика убытка и активов 2021–2024">
+              <div class="chart-year">
+                <span class="cy">2021</span>
+                <div class="chart-pair">
+                  <div class="chart-col"><i class="loss" style="height:3%"></i><em>−105</em></div>
+                  <div class="chart-col"><i class="asset" style="height:9%"></i><em>3,2 млн</em></div>
+                </div>
+              </div>
+              <div class="chart-year">
+                <span class="cy">2022</span>
+                <div class="chart-pair">
+                  <div class="chart-col"><i class="loss" style="height:16%"></i><em>−545</em></div>
+                  <div class="chart-col"><i class="asset" style="height:17%"></i><em>5,8 млн</em></div>
+                </div>
+              </div>
+              <div class="chart-year">
+                <span class="cy">2023</span>
+                <div class="chart-pair">
+                  <div class="chart-col"><i class="loss" style="height:51%"></i><em>−1,7 млн</em></div>
+                  <div class="chart-col"><i class="asset" style="height:52%"></i><em>17,6 млн</em></div>
+                </div>
+              </div>
+              <div class="chart-year">
+                <span class="cy">2024</span>
+                <div class="chart-pair">
+                  <div class="chart-col"><i class="loss" style="height:100%"></i><em>−3,4 млн</em></div>
+                  <div class="chart-col"><i class="asset" style="height:100%"></i><em>34,1 млн</em></div>
+                </div>
+              </div>
+            </div>
+            <div class="chart-legend">
+              <span><i class="swatch-loss"></i> чистый убыток</span>
+              <span><i class="swatch-asset"></i> активы</span>
+            </div>
+            <div class="table-scroll">
+              <table class="ttx-table">
+                <thead>
+                  <tr>
+                    <th>Год</th>
+                    <th>Выручка</th>
+                    <th>Чистая прибыль</th>
+                    <th>Активы</th>
+                    <th>Капитал</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>2021</td>
+                    <td>—</td>
+                    <td class="neg">−105 378</td>
+                    <td>3 180 055</td>
+                    <td class="neg">−104 378</td>
+                  </tr>
+                  <tr>
+                    <td>2022</td>
+                    <td>833</td>
+                    <td class="neg">−544 626</td>
+                    <td>5 757 415</td>
+                    <td>4 581 319</td>
+                  </tr>
+                  <tr>
+                    <td>2023</td>
+                    <td>750</td>
+                    <td class="neg">−1 748 116</td>
+                    <td>17 647 131</td>
+                    <td>15 523 495</td>
+                  </tr>
+                  <tr>
+                    <td>2024</td>
+                    <td>493</td>
+                    <td class="neg">−3 420 110</td>
+                    <td>34 137 192</td>
+                    <td>30 848 402</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
             <ul class="plain-list">
               <li>Дивиденды 2024: <strong>0 ₽</strong></li>
               <li>Уставный капитал: <strong>3 040 540,56 ₽</strong> (06.06.2025)</li>
@@ -658,20 +711,22 @@
               План федпроекта «Экономика данных», не годовая выручка ООО. Итого
               ~432 млрд ₽. Коммерция сервиса — цель 2027+.
             </p>
-            <h3 class="card-h3">Кто в прибыли (equity ООО)</h3>
+            <h3 class="card-h3">Доли equity ООО (реконструкция)</h3>
             <p class="sub" style="margin-bottom: 0.75rem">
-              Сейчас прибыли нет. Будущие участники = владельцы долей (equity) в ООО «БЮРО 1440».
+              Сейчас прибыли нет. Будущие участники = владельцы долей в ООО «БЮРО 1440».
             </p>
-            <ul class="plain-list">
-              <li>Контроль: <strong>ИКС / X Holding</strong> (~57% реконстр.)</li>
-              <li>ЗПИФ «Олимп-М» / Mercury: <strong>~33%</strong></li>
-              <li>Менеджмент: Шелобков ~4%, Икоев ~3%, Столяров ~3%</li>
-              <li>Не equity (нет доли): МегаФон (партнёр), бюджет, Роскосмос</li>
-            </ul>
+            <div class="share-bars" aria-label="Доли участников">
+              <div class="share-row"><span>ИКС / X Holding</span><div class="bar"><i class="bar--own" style="width:57%"></i></div><strong>~57%</strong></div>
+              <div class="share-row"><span>ЗПИФ «Олимп-М»</span><div class="bar"><i style="width:33%"></i></div><strong>~33%</strong></div>
+              <div class="share-row"><span>Шелобков</span><div class="bar"><i class="bar--muted" style="width:4%"></i></div><strong>~4%</strong></div>
+              <div class="share-row"><span>Икоев</span><div class="bar"><i class="bar--muted" style="width:3%"></i></div><strong>~3%</strong></div>
+              <div class="share-row"><span>Столяров</span><div class="bar"><i class="bar--muted" style="width:3%"></i></div><strong>~3%</strong></div>
+            </div>
+            <p class="note">Не equity: МегаФон (партнёр), бюджет, Роскосмос</p>
           </div>
         </div>
 
-        <div class="card ownership-card" style="margin-bottom: 1.25rem">
+        <div class="card ownership-card stack-gap">
           <h3 class="card-h3">Кто стоит за X Holding / ИКС</h3>
           <p class="sub">
             Это холдинг над Бюро 1440, не список долей самого ООО. Актуальные имена
@@ -714,7 +769,7 @@
           </p>
         </div>
 
-        <div class="card ownership-card">
+        <div class="card ownership-card stack-gap">
           <h3 class="card-h3">Эволюция долей</h3>
           <div class="ownership-steps">
             <div class="own-step">
@@ -854,9 +909,7 @@
       <section class="orbit-theater" id="orbit">
         <div class="block-head">
           <p class="section-tag">Орбитальный театр</p>
-          <h2 style="margin:0;font-family:var(--font-display);color:var(--ink);font-size:clamp(1.25rem,2.5vw,1.75rem)">
-            Как спутники летят относительно Земли
-          </h2>
+          <h2>Как спутники летят относительно Земли</h2>
           <p class="block-lead">
             Приполярная орбита <strong>i≈82.3°</strong>: витки идут через Арктику и почти
             через полюса — над Россией, океанами и чужими территориями. Свой интернет
@@ -884,6 +937,11 @@
               <div class="orbit-callout">
                 <strong>Хватает ли 31 на всю страну?</strong>
                 Нет. Короткие окна связи, не 24/7. Нужны сотни КА (цель &gt;250 / госплан 292).
+              </div>
+              <div class="compare-bars" aria-label="Сравнение числа КА">
+                <div class="share-row"><span>Сейчас</span><div class="bar"><i class="bar--muted" style="width:12%"></i></div><strong>~31</strong></div>
+                <div class="share-row"><span>Цель</span><div class="bar"><i class="bar--own" style="width:86%"></i></div><strong>~252</strong></div>
+                <div class="share-row"><span>Госплан</span><div class="bar"><i style="width:100%"></i></div><strong>292</strong></div>
               </div>
               <div class="orbit-callout">
                 <strong>Слепые зоны</strong>
