@@ -293,8 +293,14 @@
               <!-- body -->
               <rect x="170" y="110" width="220" height="110" rx="4" fill="#e8ecf2" stroke="#1a1a1a" stroke-width="2" />
               <text x="200" y="145" font-family="Unbounded,sans-serif" font-size="13" fill="#1a1a1a">корпус ~370 кг</text>
-              <text x="200" y="165" font-family="Onest,sans-serif" font-size="11" fill="#666">5G NTN · Ku/Ka</text>
-              <text x="200" y="185" font-family="Onest,sans-serif" font-size="11" fill="#666">АФАР user + Ka feeder</text>
+              <g>
+                <title>Ku (~12–18 ГГц) — к абоненту; Ka (~26–40 ГГц) — часто feeder к шлюзу</title>
+                <text x="200" y="165" font-family="Onest,sans-serif" font-size="11" fill="#666">5G NTN · Ku/Ka</text>
+              </g>
+              <g>
+                <title>АФАР user — луч к абоненту; Ka feeder — магистраль спутник↔шлюз</title>
+                <text x="200" y="185" font-family="Onest,sans-serif" font-size="11" fill="#666">АФАР user + Ka feeder</text>
+              </g>
               <text x="200" y="205" font-family="Onest,sans-serif" font-size="11" fill="#666">СЭС · ориентация · GNSS</text>
               <!-- solar right -->
               <rect x="410" y="130" width="110" height="70" fill="#1a1a1a" stroke="#c00000" stroke-width="2" />
@@ -312,13 +318,28 @@
               <text x="320" y="245" font-family="Onest,sans-serif" font-size="11" fill="#333">плазменная ДУ (Kr)</text>
               <text x="320" y="260" font-family="Onest,sans-serif" font-size="10" fill="#666">подъём с ~300 км</text>
               <!-- ka dishes -->
-              <ellipse cx="200" cy="100" rx="18" ry="10" fill="#fff" stroke="#666" />
-              <ellipse cx="360" cy="100" rx="18" ry="10" fill="#fff" stroke="#666" />
-              <text x="175" y="78" font-family="Onest,sans-serif" font-size="10" fill="#666">Ka feeder</text>
+              <g>
+                <title>Ka feeder — радиоканал к шлюзовой станции (часто Ka-диапазон)</title>
+                <ellipse cx="200" cy="100" rx="18" ry="10" fill="#fff" stroke="#666" />
+                <ellipse cx="360" cy="100" rx="18" ry="10" fill="#fff" stroke="#666" />
+                <text x="175" y="78" font-family="Onest,sans-serif" font-size="10" fill="#666">Ka feeder</text>
+              </g>
               <text x="40" y="320" font-family="Onest,sans-serif" font-size="11" fill="#666">
                 Схема-реконструкция · не официальный чертёж Бюро 1440
               </text>
             </svg>
+            <p class="sat-legend note">
+              Наведите:
+              <span class="term" tabindex="0" data-tip="Ku-диапазон (~12–18 ГГц) — чаще луч к абонентскому терминалу.">Ku</span>
+              ·
+              <span class="term" tabindex="0" data-tip="Ka-диапазон (~26–40 ГГц) — выше частота, больше скорость; типичен для feeder.">Ka</span>
+              ·
+              <span class="term" tabindex="0" data-tip="Feeder (фидер) — магистраль спутник↔шлюз на Земле (интернет/ядро). Не путать с user-link к телефону.">feeder</span>
+              ·
+              <span class="term" tabindex="0" data-tip="Фидер в Ka: широкий канал со шлюзом. Отдельно от АФАР user к абоненту.">Ka feeder</span>
+              ·
+              <span class="term" tabindex="0" data-tip="User-link — радиолуч к абоненту (терминал АФАР / сервис).">user</span>
+            </p>
           </div>
 
           <div class="card">
