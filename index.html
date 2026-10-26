@@ -914,8 +914,8 @@
           <p class="section-tag">3D · три КА + лазер</p>
           <h2>Как летит мини-группировка и лазерный ISL</h2>
           <p class="block-lead">
-            Весь шар: три КА «Рассвет» на ~510&nbsp;км, i≈82.3°. A и B — одна плоскость, C — соседняя (ΔRAAN≈30°).
-            Голубые линии — лазер между аппаратами, если Земля не перекрывает луч. Стрелки сил — у КА-A.
+            Весь шар: три КА на ~510&nbsp;км, i≈82.3°. <strong>Фаза</strong> — угол вдоль витка;
+            A и B в одной плоскости (B сдвинут по фазе), C — соседняя плоскость. Красный луч — ISL ≤~1000&nbsp;км и без Земли в хорде.
           </p>
         </div>
 
@@ -924,11 +924,9 @@
             <div id="orbit3d-root" class="orbit3d-root" role="img" aria-label="3D: три спутника Рассвет и лазерные линки"></div>
             <aside class="orbit-hud" aria-label="Легенда 3D">
               <span class="hud-chip"><i class="hud-dot hud-dot--sat"></i> A красный · B голубой · C жёлтый</span>
-              <span class="hud-chip"><i class="hud-dot hud-dot--laser"></i> Лазер ISL + пакет</span>
-              <span class="hud-chip"><i class="hud-dot hud-dot--ru"></i> Красное — Россия</span>
-              <span class="hud-chip"><i class="hud-dot hud-dot--land"></i> Другие страны</span>
-              <span class="hud-chip"><i class="hud-dot hud-dot--track"></i> Пунктир — плоскости орбит</span>
-              <span class="hud-chip"><i class="hud-dot hud-dot--foot"></i> Пятно связи</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--g"></i> Красный луч — лазер ISL</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--ru"></i> Россия</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--track"></i> Плоскости орбит</span>
             </aside>
             <p class="orbit-live">Мышь: вращать · колёсико: зум · весь шар · Kepler + ISL</p>
           </div>
@@ -938,19 +936,48 @@
               <button type="button" class="btn btn--ghost" id="o3-slow">Скорость ×1</button>
             </div>
             <div class="orbit-metric">
-              <div class="label">Где КА-A сейчас</div>
-              <p class="big o3-over" id="o3-over">—</p>
-              <div class="label" style="margin-top:0.75rem">Лазерная mesh</div>
+              <div class="label">Лазерная mesh</div>
               <p class="big o3-over" id="o3-laser">—</p>
-              <dl class="o3-telemetry">
+              <p class="o3-over" id="o3-over" hidden>—</p>
+              <div class="o3-sat-grid" role="group" aria-label="Телеметрия трёх КА">
+                <div class="o3-sat-col o3-sat-col--a">
+                  <div class="o3-sat-name">КА-A</div>
+                  <p class="o3-sat-where" id="o3-a-where">—</p>
+                  <dl>
+                    <div><dt>Фаза u</dt><dd id="o3-a-phase">—</dd></div>
+                    <div><dt>Плоскость</dt><dd id="o3-a-plane">0°</dd></div>
+                    <div><dt>Широта</dt><dd id="o3-a-lat">—</dd></div>
+                    <div><dt>Долгота</dt><dd id="o3-a-lon">—</dd></div>
+                  </dl>
+                </div>
+                <div class="o3-sat-col o3-sat-col--b">
+                  <div class="o3-sat-name">КА-B</div>
+                  <p class="o3-sat-where" id="o3-b-where">—</p>
+                  <dl>
+                    <div><dt>Фаза u</dt><dd id="o3-b-phase">—</dd></div>
+                    <div><dt>Плоскость</dt><dd id="o3-b-plane">0° · +фаза</dd></div>
+                    <div><dt>Широта</dt><dd id="o3-b-lat">—</dd></div>
+                    <div><dt>Долгота</dt><dd id="o3-b-lon">—</dd></div>
+                  </dl>
+                </div>
+                <div class="o3-sat-col o3-sat-col--c">
+                  <div class="o3-sat-name">КА-C</div>
+                  <p class="o3-sat-where" id="o3-c-where">—</p>
+                  <dl>
+                    <div><dt>Фаза u</dt><dd id="o3-c-phase">—</dd></div>
+                    <div><dt>Плоскость</dt><dd id="o3-c-plane">+10°</dd></div>
+                    <div><dt>Широта</dt><dd id="o3-c-lat">—</dd></div>
+                    <div><dt>Долгота</dt><dd id="o3-c-lon">—</dd></div>
+                  </dl>
+                </div>
+              </div>
+              <dl class="o3-telemetry o3-telemetry--shared">
                 <div><dt>Высота</dt><dd id="o3-alt">~510 км</dd></div>
                 <div><dt>Скорость</dt><dd id="o3-speed">~7.6 км/с</dd></div>
-                <div><dt>Широта A</dt><dd id="o3-lat">—</dd></div>
-                <div><dt>Долгота A</dt><dd id="o3-lon">—</dd></div>
-                <div><dt>Период витка</dt><dd id="o3-period">~95 мин</dd></div>
+                <div><dt>Период</dt><dd id="o3-period">~95 мин</dd></div>
                 <div><dt>Длина витка</dt><dd id="o3-orbit-len">~43 тыс. км</dd></div>
                 <div><dt>Наклонение</dt><dd>i ≈ 82.3°</dd></div>
-                <div><dt>Дальность ISL</dt><dd id="o3-laser-dist">—</dd></div>
+                <div><dt>Потолок ISL</dt><dd>≤ ~1000 км</dd></div>
                 <div><dt>Пролёт над РФ</dt><dd id="o3-pass-time">считаем…</dd></div>
                 <div><dt>Путь над РФ</dt><dd id="o3-pass-dist">считаем…</dd></div>
               </dl>
@@ -958,19 +985,19 @@
             </div>
             <div class="orbit-callouts">
               <div class="orbit-callout">
-                <strong>Лазер ISL</strong>
-                Луч идёт напрямую КА↔КА. Если хорда пересекает Землю — линка нет (тусклая линия).
-                Белая точка — учебный «пакет»; в жизни свет летит за ~мс.
+                <strong>Что такое фаза</strong>
+                Фаза u — «где на кольце орбиты» сидит КА. B = A + ~8° в той же плоскости
+                (соседи по витку). C — другая плоскость (RAAN +10°) и своя фаза: это уже сосед «сбоку».
               </div>
               <div class="orbit-callout">
-                <strong>Зачем 3 аппарата</strong>
-                A–B: соседи в одной плоскости. A–C / B–C: межплоскостной линк.
-                Так пакет прыгает по mesh, не спускаясь на шлюз каждый раз.
+                <strong>Почему Земля режет луч</strong>
+                ≤1000&nbsp;км — условие дальности, но лазер летит по прямой. Если прямая врезается
+                в шар Земли, «в поле зрения» нет — даже при 700–900&nbsp;км. Нужны и дистанция, и LOS над горизонтом.
               </div>
               <div class="orbit-callout">
-                <strong>Наклонение 82.3°</strong>
-                Почти полярная орбита: Арктика и Севморпуть. Один КА не закрывает РФ 24/7 —
-                нужна сетка плоскостей.
+                <strong>Красный луч</strong>
+                Толстая красная трубка = живой ISL + белый «пакет». Тусклая = нет линка
+                (далеко или Земля в хорде). Раньше при фазе 72° линк почти всегда резала планета.
               </div>
             </div>
           </div>

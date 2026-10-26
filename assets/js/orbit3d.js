@@ -18,9 +18,31 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
   const elOrbitLen = document.getElementById("o3-orbit-len");
   const elVisNote = document.getElementById("o3-vis-note");
   const elLaser = document.getElementById("o3-laser");
-  const elLaserDist = document.getElementById("o3-laser-dist");
   const playBtn = document.getElementById("o3-play");
   const slowBtn = document.getElementById("o3-slow");
+  const satHud = {
+    a: {
+      where: document.getElementById("o3-a-where"),
+      lat: document.getElementById("o3-a-lat"),
+      lon: document.getElementById("o3-a-lon"),
+      phase: document.getElementById("o3-a-phase"),
+      plane: document.getElementById("o3-a-plane"),
+    },
+    b: {
+      where: document.getElementById("o3-b-where"),
+      lat: document.getElementById("o3-b-lat"),
+      lon: document.getElementById("o3-b-lon"),
+      phase: document.getElementById("o3-b-phase"),
+      plane: document.getElementById("o3-b-plane"),
+    },
+    c: {
+      where: document.getElementById("o3-c-where"),
+      lat: document.getElementById("o3-c-lat"),
+      lon: document.getElementById("o3-c-lon"),
+      phase: document.getElementById("o3-c-phase"),
+      plane: document.getElementById("o3-c-plane"),
+    },
+  };
 
   const EARTH_R_KM = 6371;
   const ALT_KM = 510;
@@ -30,6 +52,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
   const EARTH_R = EARTH_R_KM * SCALE;
   const ORBIT_R = ORBIT_R_KM * SCALE;
   const LOS_MIN_R = EARTH_R * 1.06; // луч не должен задевать атмосферу
+  const MAX_ISL_KM = 1000; // учебный потолок дальности ISL «Рассвет»
 
   const PERIOD_REAL_S = 2 * Math.PI * Math.sqrt(Math.pow(ORBIT_R_KM * 1000, 3) / 3.986e14);
   const PERIOD_VIS_S = 28;
@@ -389,9 +412,12 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
         <p><strong>Оборот:</strong> ~${Math.round(s.periodMin)} мин, путь за виток ${fmtKm(s.orbitLenKm)}, ~${s.speed.toFixed(1)} км/с.</p>
         <p><strong>Над РФ:</strong> непрерывный пролёт ~${s.passMinLo.toFixed(1)}–${s.passMinHi.toFixed(1)} мин
           (${fmtKm(s.passKmLo)}–${fmtKm(s.passKmHi)}); ~${Math.round(s.missFrac * 100)}% ориентаций плоскости РФ не пересекают.</p>
-        <p><strong>3 КА + лазер:</strong> A и B — одна плоскость (соседи по фазе), C — соседняя плоскость (ΔRAAN).
-          Голубые линии — ISL, если хорда не пересекает Землю. Пульс — учебный «пакет» (свет в реальности летит за миллисекунды).</p>
-        <p><strong>Орбита:</strong> круговой Kepler h=510 км, i=82.3°. Карта — Natural Earth 110m, РФ красным.</p>
+        <p><strong>Фаза:</strong> положение КА вдоль своей орбитальной окружности (угол u / средняя аномалия).
+          A — опорный; B сдвинут по фазе в <em>той же</em> плоскости; C — другая плоскость (RAAN) + свой фазовый угол.</p>
+        <p><strong>Лазер и Земля:</strong> дальность ≤~${MAX_ISL_KM}&nbsp;км <em>недостаточна</em>. Нужна прямая видимость:
+          хорда КА–КА не должна врезаться в Землю. Даже на 800&nbsp;км луч может идти «сквозь» горизонт планеты —
+          тогда LOS нет. Красная толстая линия = линк жив; тусклая = обрезан дальностью или Землёй.</p>
+        <p><strong>Орбита:</strong> круговой Kepler h=510 км, i=82.3°. Карта — Natural Earth 110m.</p>
       `;
     }
   }
@@ -431,10 +457,12 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
     scene.add(line);
     return line;
   }
-  const RAAN_B = 0;
-  const RAAN_C = (30 * Math.PI) / 180; // соседняя плоскость (~как шаг при 12 плоскостях)
-  addOrbitLine(RAAN_B, 0.7);
-  addOrbitLine(RAAN_C, 0.35);
+  // Плоскости: A/B — одна; C — соседняя. Фазы подобраны так, чтобы хорда ≈0.7–1.0 тыс. км
+  // (при 72° раньше линк почти всегда резала Земля — угловой запас LOS на 510 км ≈ ±22°).
+  const RAAN_A = 0;
+  const RAAN_C = (10 * Math.PI) / 180;
+  addOrbitLine(RAAN_A, 0.7);
+  addOrbitLine(RAAN_C, 0.4);
 
   function makeSat(accentColor, scale = 1) {
     const g = new THREE.Group();
@@ -460,9 +488,10 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
     return g;
   }
 
-  // A — ведущий; B — сосед по плоскости; C — соседняя плоскость
-  const PHASE_B = (72 * Math.PI) / 180;
-  const PHASE_C = (40 * Math.PI) / 180;
+  // Фаза ≈ угол вдоль витка. ~8° на R=6881 км → хорда ≈960 км (в пределах MAX_ISL_KM)
+  const PHASE_A = 0;
+  const PHASE_B = (8 * Math.PI) / 180;
+  const PHASE_C = (5 * Math.PI) / 180;
   const satA = makeSat(0xe02020, 1.15);
   const satB = makeSat(0x5ce1ff, 1);
   const satC = makeSat(0xffb020, 1);
@@ -495,24 +524,41 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
   const arrowD = makeArrow(0xffb020);
   scene.add(arrowG, arrowV, arrowD);
 
-  // Лазерные линки + пульсы пакетов
+  // Жирный лазер (цилиндр — LineBasic linewidth в WebGL почти не работает)
+  const _yUp = new THREE.Vector3(0, 1, 0);
+  const _linkDir = new THREE.Vector3();
   function makeLaserLink() {
-    const geo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
-    const line = new THREE.Line(
-      geo,
-      new THREE.LineBasicMaterial({ color: 0x5ce1ff, transparent: true, opacity: 0.85 })
+    const tube = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.028, 0.028, 1, 10, 1, true),
+      new THREE.MeshBasicMaterial({
+        color: 0xe02020,
+        transparent: true,
+        opacity: 0.95,
+        depthWrite: false,
+      })
     );
-    scene.add(line);
+    scene.add(tube);
+    const glow = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.055, 0.055, 1, 10, 1, true),
+      new THREE.MeshBasicMaterial({
+        color: 0xff4a4a,
+        transparent: true,
+        opacity: 0.28,
+        depthWrite: false,
+      })
+    );
+    scene.add(glow);
     const pulse = new THREE.Mesh(
-      new THREE.SphereGeometry(0.055, 12, 12),
-      new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.95 })
+      new THREE.SphereGeometry(0.07, 12, 12),
+      new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1 })
     );
     scene.add(pulse);
-    const pulse2 = pulse.clone();
-    pulse2.material = pulse.material.clone();
-    pulse2.material.color.set(0x5ce1ff);
+    const pulse2 = new THREE.Mesh(
+      new THREE.SphereGeometry(0.055, 10, 10),
+      new THREE.MeshBasicMaterial({ color: 0xff8080, transparent: true, opacity: 0.95 })
+    );
     scene.add(pulse2);
-    return { line, pulse, pulse2, geo };
+    return { tube, glow, pulse, pulse2 };
   }
   const linkAB = makeLaserLink();
   const linkAC = makeLaserLink();
@@ -586,10 +632,27 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
   }
 
   function updateLink(link, a, b, active, phase) {
-    link.line.visible = true;
-    link.line.geometry.setFromPoints([a, b]);
-    link.line.material.opacity = active ? 0.9 : 0.12;
-    link.line.material.color.set(active ? 0x5ce1ff : 0x3a4555);
+    _linkDir.subVectors(b, a);
+    const len = _linkDir.length();
+    if (len < 1e-6) {
+      link.tube.visible = false;
+      link.glow.visible = false;
+      link.pulse.visible = false;
+      link.pulse2.visible = false;
+      return;
+    }
+    const mid = a.clone().add(b).multiplyScalar(0.5);
+    link.tube.visible = true;
+    link.glow.visible = true;
+    link.tube.position.copy(mid);
+    link.glow.position.copy(mid);
+    link.tube.scale.set(active ? 1.15 : 0.55, len, active ? 1.15 : 0.55);
+    link.glow.scale.set(active ? 1 : 0.45, len, active ? 1 : 0.45);
+    link.tube.quaternion.setFromUnitVectors(_yUp, _linkDir.normalize());
+    link.glow.quaternion.copy(link.tube.quaternion);
+    link.tube.material.opacity = active ? 0.98 : 0.14;
+    link.tube.material.color.set(active ? 0xe02020 : 0x4a3030);
+    link.glow.material.opacity = active ? 0.32 : 0.05;
     link.pulse.visible = active;
     link.pulse2.visible = active;
     if (active) {
@@ -598,6 +661,28 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
       link.pulse.position.lerpVectors(a, b, t1);
       link.pulse2.position.lerpVectors(a, b, t2);
     }
+  }
+
+  function zoneLabel(lat, lon) {
+    if (overRussiaPrecise(lat, lon)) return { text: "над Россией", zone: "ru" };
+    if (lat > 70) return { text: "Арктика", zone: "out" };
+    if (lat < -70) return { text: "Антарктика", zone: "out" };
+    if (Math.abs(lat) < 25) return { text: "у экватора", zone: "out" };
+    return { text: "вне РФ", zone: "out" };
+  }
+
+  function fillSatCol(key, lat, lon, phaseDeg, planeLabel) {
+    const h = satHud[key];
+    if (!h) return;
+    const z = zoneLabel(lat, lon);
+    if (h.where) {
+      h.where.textContent = z.text;
+      h.where.dataset.zone = z.zone;
+    }
+    if (h.lat) h.lat.textContent = `${lat.toFixed(1)}°`;
+    if (h.lon) h.lon.textContent = `${lon.toFixed(1)}°`;
+    if (h.phase) h.phase.textContent = `${phaseDeg.toFixed(1)}°`;
+    if (h.plane) h.plane.textContent = planeLabel;
   }
 
   function frame(now) {
@@ -609,12 +694,12 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
       pulseT += dt * timeScale * 0.55;
     }
 
-    const uA = meanAnomaly;
+    const uA = meanAnomaly + PHASE_A;
     const uB = meanAnomaly + PHASE_B;
     const uC = meanAnomaly + PHASE_C;
 
-    const A = placeSat(satA, footA, uA, RAAN_B, true);
-    const B = placeSat(satB, footB, uB, RAAN_B, false);
+    const A = placeSat(satA, footA, uA, RAAN_A, true);
+    const B = placeSat(satB, footB, uB, RAAN_A, false);
     const C = placeSat(satC, footC, uC, RAAN_C, false);
 
     const gravDir = A.pos.clone().normalize().negate();
@@ -628,21 +713,44 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
     arrowD.setDirection(A.vel.clone().negate());
     arrowD.setLength(0.22, 0.07, 0.04);
 
-    const losAB = hasLaserLos(A.pos, B.pos);
-    const losAC = hasLaserLos(A.pos, C.pos);
-    const losBC = hasLaserLos(B.pos, C.pos);
-    updateLink(linkAB, A.pos, B.pos, losAB, pulseT);
-    updateLink(linkAC, A.pos, C.pos, losAC, pulseT + 0.33);
-    updateLink(linkBC, B.pos, C.pos, losBC, pulseT + 0.66);
+    const dAB = A.pos.distanceTo(B.pos) / SCALE;
+    const dAC = A.pos.distanceTo(C.pos) / SCALE;
+    const dBC = B.pos.distanceTo(C.pos) / SCALE;
+    const okAB = dAB <= MAX_ISL_KM && hasLaserLos(A.pos, B.pos);
+    const okAC = dAC <= MAX_ISL_KM && hasLaserLos(A.pos, C.pos);
+    const okBC = dBC <= MAX_ISL_KM && hasLaserLos(B.pos, C.pos);
+    updateLink(linkAB, A.pos, B.pos, okAB, pulseT);
+    updateLink(linkAC, A.pos, C.pos, okAC, pulseT + 0.33);
+    updateLink(linkBC, B.pos, C.pos, okBC, pulseT + 0.66);
+
+    function linkReason(d, a, b) {
+      if (d > MAX_ISL_KM) return `далеко ${Math.round(d)} км > ${MAX_ISL_KM}`;
+      if (!hasLaserLos(a, b)) return `Земля в хорде (${Math.round(d)} км)`;
+      return null;
+    }
 
     const activeLinks = [
-      losAB && { name: "A↔B (одна плоскость)", d: A.pos.distanceTo(B.pos) / SCALE },
-      losAC && { name: "A↔C (межплоскостной)", d: A.pos.distanceTo(C.pos) / SCALE },
-      losBC && { name: "B↔C", d: B.pos.distanceTo(C.pos) / SCALE },
+      okAB && { name: "A↔B", d: dAB },
+      okAC && { name: "A↔C", d: dAC },
+      okBC && { name: "B↔C", d: dBC },
+    ].filter(Boolean);
+    const blocked = [
+      !okAB && `A↔B: ${linkReason(dAB, A.pos, B.pos)}`,
+      !okAC && `A↔C: ${linkReason(dAC, A.pos, C.pos)}`,
+      !okBC && `B↔C: ${linkReason(dBC, B.pos, C.pos)}`,
     ].filter(Boolean);
 
-    const { lat, lon } = latLonFromPos(A.pos, earth.rotation.y);
-    const over = overRussiaPrecise(lat, lon);
+    const llA = latLonFromPos(A.pos, earth.rotation.y);
+    const llB = latLonFromPos(B.pos, earth.rotation.y);
+    const llC = latLonFromPos(C.pos, earth.rotation.y);
+    const phaseADeg = ((((uA * 180) / Math.PI) % 360) + 360) % 360;
+    const phaseBDeg = ((((uB * 180) / Math.PI) % 360) + 360) % 360;
+    const phaseCDeg = ((((uC * 180) / Math.PI) % 360) + 360) % 360;
+    fillSatCol("a", llA.lat, llA.lon, phaseADeg, "плоскость 0°");
+    fillSatCol("b", llB.lat, llB.lon, phaseBDeg, "плоскость 0° · +фаза");
+    fillSatCol("c", llC.lat, llC.lon, phaseCDeg, "плоскость +10°");
+
+    const over = overRussiaPrecise(llA.lat, llA.lon);
     const realDt = playing ? dt * timeScale * (PERIOD_REAL_S / PERIOD_VIS_S) : 0;
     if (over) {
       overAccumS += realDt;
@@ -654,39 +762,26 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
     if (elAlt) elAlt.textContent = `~${ALT_KM} км`;
     if (elSpeed) elSpeed.textContent = `~${V_ORBIT_KMS.toFixed(1)} км/с`;
-    if (elLat) elLat.textContent = `${lat.toFixed(1)}°`;
-    if (elLon) elLon.textContent = `${lon.toFixed(1)}°`;
+    if (elLat) elLat.textContent = `${llA.lat.toFixed(1)}°`;
+    if (elLon) elLon.textContent = `${llA.lon.toFixed(1)}°`;
     if (elOver) {
-      if (over) {
-        elOver.textContent = `КА-A над РФ · ${fmtMin(overAccumS / 60)} · ${fmtKm(V_ORBIT_KMS * overAccumS)}`;
-        elOver.dataset.zone = "ru";
-      } else if (lat > 70) {
-        elOver.textContent = "КА-A: Арктика / высокие широты";
-        elOver.dataset.zone = "out";
-      } else if (Math.abs(lat) < 25) {
-        elOver.textContent = "КА-A: низкие широты / у экватора";
-        elOver.dataset.zone = "out";
-      } else {
-        elOver.textContent = "КА-A: вне РФ";
-        elOver.dataset.zone = "out";
-      }
+      elOver.textContent = over
+        ? `пролёт РФ · ${fmtMin(overAccumS / 60)} · ${fmtKm(V_ORBIT_KMS * overAccumS)}`
+        : "смотрите столбцы A / B / C";
+      elOver.dataset.zone = over ? "ru" : "out";
     }
 
     if (elLaser) {
       if (!activeLinks.length) {
-        elLaser.textContent = "нет LOS (Земля перекрывает)";
+        elLaser.textContent = blocked[0] || "нет линков";
         elLaser.dataset.zone = "out";
       } else {
-        elLaser.textContent = `${activeLinks.length}/3 линка · ${activeLinks.map((l) => l.name).join(", ")}`;
+        const parts = activeLinks.map((l) => {
+          const ms = (l.d / C_KM_S) * 1000;
+          return `${l.name} ${Math.round(l.d)} км (~${ms.toFixed(1)} мс)`;
+        });
+        elLaser.textContent = `${activeLinks.length}/3 · ${parts.join(" · ")}`;
         elLaser.dataset.zone = "ru";
-      }
-    }
-    if (elLaserDist) {
-      if (!activeLinks.length) elLaserDist.textContent = "—";
-      else {
-        const d = activeLinks[0].d;
-        const ms = (d / C_KM_S) * 1000;
-        elLaserDist.textContent = `${fmtKm(d)} · свет ~${ms.toFixed(1)} мс`;
       }
     }
 
