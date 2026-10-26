@@ -417,6 +417,69 @@ body {
   height: auto;
 }
 
+.orbit-stage--3d {
+  min-height: 480px;
+}
+
+.orbit3d-root {
+  width: 100%;
+  height: min(62vh, 560px);
+  min-height: 420px;
+  background: #070a10;
+}
+
+.orbit3d-root canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.o3-telemetry {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem 0.75rem;
+  margin: 0.85rem 0 0;
+}
+
+.o3-telemetry div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.o3-telemetry dt {
+  margin: 0;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.o3-telemetry dd {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.o3-over[data-zone="ru"] {
+  color: var(--ember);
+}
+
+.hud-dot--g {
+  background: var(--crimson);
+}
+
+.hud-dot--v {
+  background: var(--laser);
+}
+
+.hud-dot--d {
+  background: var(--rf);
+}
+
 .orbit-hud {
   position: absolute;
   left: 0.75rem;

@@ -911,25 +911,84 @@
 
       <section class="orbit-theater" id="orbit">
         <div class="block-head">
-          <p class="section-tag">Орбитальный театр</p>
-          <h2>Как спутники летят относительно Земли</h2>
+          <p class="section-tag">3D · один виток</p>
+          <h2>Как один спутник летит вокруг Земли</h2>
           <p class="block-lead">
-            Все точки на шаре — только модель группировки «Рассвет», не Starlink и не чужие КА.
-            Красная заливка — территория РФ. Жёлтое пятно — зона связи одного аппарата.
+            Сначала один КА «Рассвет» на ~510 км, i≈82.3°. Красное на шаре — Россия.
+            Стрелки — силы и скорость. Дальше добавим всю группировку и путь сигнала.
+          </p>
+        </div>
+
+        <div class="orbit-shell">
+          <div class="orbit-stage orbit-stage--3d">
+            <div id="orbit3d-root" class="orbit3d-root" role="img" aria-label="3D анимация одного спутника Рассвет вокруг Земли"></div>
+            <aside class="orbit-hud" aria-label="Легенда 3D">
+              <span class="hud-chip"><i class="hud-dot hud-dot--sat"></i> КА «Рассвет»</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--ru"></i> Красное — Россия</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--track"></i> Пунктир — орбита</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--foot"></i> Жёлтое — пятно связи</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--g"></i> Красная стрелка — тяготение</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--v"></i> Голубая — скорость</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--d"></i> Оранжевая — drag (атмосфера)</span>
+            </aside>
+            <p class="orbit-live">Мышь: вращать · колёсико: зум · учебная модель Kepler</p>
+          </div>
+          <div class="orbit-side">
+            <div class="orbit-controls">
+              <button type="button" class="btn btn--light" id="o3-play">Пауза</button>
+              <button type="button" class="btn btn--ghost" id="o3-slow">Скорость ×1</button>
+            </div>
+            <div class="orbit-metric">
+              <div class="label">Где аппарат сейчас</div>
+              <p class="big o3-over" id="o3-over">—</p>
+              <dl class="o3-telemetry">
+                <div><dt>Высота</dt><dd id="o3-alt">~510 км</dd></div>
+                <div><dt>Скорость</dt><dd id="o3-speed">~7.6 км/с</dd></div>
+                <div><dt>Широта</dt><dd id="o3-lat">—</dd></div>
+                <div><dt>Долгота</dt><dd id="o3-lon">—</dd></div>
+                <div><dt>Период витка</dt><dd id="o3-period">~95 мин</dd></div>
+                <div><dt>Наклонение</dt><dd>i ≈ 82.3°</dd></div>
+              </dl>
+            </div>
+            <div class="orbit-callouts">
+              <div class="orbit-callout">
+                <strong>Почему не падает</strong>
+                Тяготение тянет к центру Земли, но скорость ~7,6 км/с постоянно
+                «промахивается» мимо — это и есть орбита (свободное падение по кругу).
+              </div>
+              <div class="orbit-callout">
+                <strong>Что делают силы</strong>
+                Красная стрелка — гравитация. Голубая — куда летит. Оранжевая — слабый
+                drag LEO (снижает орбиту → нужна плазменная ДУ).
+              </div>
+              <div class="orbit-callout">
+                <strong>Зачем наклонение 82.3°</strong>
+                Почти полярная орбита: витки через Арктику и Севморпуть; над РФ бывает
+                часто, но один КА не закрывает страну 24/7.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="block-head" style="margin-top: 2rem">
+          <p class="section-tag">2D · вся группировка</p>
+          <h2>Потом — десятки и сотни КА</h2>
+          <p class="block-lead">
+            Пока 3D учит одному аппарату. Ниже — схема фазирования: ~31 vs цель ~252.
+            Следующий шаг: несколько КА + лазер + сигнал с Земли.
           </p>
         </div>
 
         <div class="orbit-shell">
           <div class="orbit-stage">
-            <canvas id="orbit-canvas" width="900" height="560" aria-label="Анимация Земли и спутников Рассвет"></canvas>
-            <aside class="orbit-hud" aria-label="Как читать картинку">
-              <span class="hud-chip"><i class="hud-dot hud-dot--sat"></i> Белые точки — КА «Рассвет»</span>
-              <span class="hud-chip"><i class="hud-dot hud-dot--laser"></i> Голубые линии — лазерная mesh</span>
-              <span class="hud-chip"><i class="hud-dot hud-dot--foot"></i> Жёлтое пятно — покрытие одного КА</span>
-              <span class="hud-chip"><i class="hud-dot hud-dot--ru"></i> Красный контур — Россия</span>
-              <span class="hud-chip"><i class="hud-dot hud-dot--track"></i> Пунктир — один виток i≈82.3°</span>
+            <canvas id="orbit-canvas" width="900" height="560" aria-label="2D модель группировки Рассвет"></canvas>
+            <aside class="orbit-hud" aria-label="Как читать 2D">
+              <span class="hud-chip"><i class="hud-dot hud-dot--sat"></i> Точки — КА «Рассвет»</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--laser"></i> Mesh</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--foot"></i> Пятна связи</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--ru"></i> Россия</span>
             </aside>
-            <p class="orbit-live">В кадре: <strong id="orbit-count">—</strong> · учебная модель, не NORAD</p>
+            <p class="orbit-live">В кадре: <strong id="orbit-count">—</strong></p>
           </div>
           <div class="orbit-side">
             <div class="orbit-controls">
@@ -938,31 +997,15 @@
               <button type="button" class="btn btn--light" id="orbit-play">Пауза</button>
             </div>
             <div class="orbit-metric">
-              <div class="label">Сколько красной РФ «освещено» сейчас</div>
+              <div class="label">Покрытие модели РФ</div>
               <p class="big" id="orbit-cover-pct">—</p>
-              <p id="orbit-blind">Жёлтые пятна vs красный контур России</p>
+              <p id="orbit-blind">Жёлтые пятна vs красный контур</p>
               <p id="orbit-status" class="note" style="margin-top:0.65rem"></p>
             </div>
-            <div class="orbit-callouts">
-              <div class="orbit-callout">
-                <strong>Хватает ли 31 на всю страну?</strong>
-                Нет. Короткие окна связи, не 24/7. Нужны сотни КА (цель &gt;250 / госплан 292).
-              </div>
-              <div class="compare-bars" aria-label="Сравнение числа КА">
-                <div class="share-row"><span>Сейчас</span><div class="bar"><i class="bar--muted" style="width:12%"></i></div><strong>~31</strong></div>
-                <div class="share-row"><span>Цель</span><div class="bar"><i class="bar--own" style="width:86%"></i></div><strong>~252</strong></div>
-                <div class="share-row"><span>Госплан</span><div class="bar"><i style="width:100%"></i></div><strong>292</strong></div>
-              </div>
-              <div class="orbit-callout">
-                <strong>Слепые зоны</strong>
-                Нет КА выше ~25° · разрывы плоскостей · дыры, если борт не поднялся.
-                Лечение: число КА × фазирование × ISL × handover.
-              </div>
-              <div class="orbit-callout">
-                <strong>Над чьей землёй летят?</strong>
-                Над всей Землёй в поясе наклонения: РФ, Арктика, Евразия, океаны,
-                Антарктика. Покрытие сервиса — где есть свои КА + терминал + право.
-              </div>
+            <div class="compare-bars" aria-label="Сравнение числа КА">
+              <div class="share-row"><span>Сейчас</span><div class="bar"><i class="bar--muted" style="width:12%"></i></div><strong>~31</strong></div>
+              <div class="share-row"><span>Цель</span><div class="bar"><i class="bar--own" style="width:86%"></i></div><strong>~252</strong></div>
+              <div class="share-row"><span>Госплан</span><div class="bar"><i style="width:100%"></i></div><strong>292</strong></div>
             </div>
           </div>
         </div>
@@ -1220,5 +1263,14 @@
     <script src="assets/js/glossary.js"></script>
     <script src="assets/js/main.js"></script>
     <script src="assets/js/orbit.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+        }
+      }
+    </script>
+    <script type="module" src="assets/js/orbit3d.js"></script>
   </body>
 </html>
