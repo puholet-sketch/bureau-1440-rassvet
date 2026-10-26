@@ -66,7 +66,8 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
   let playing = true;
   let timeScale = 1;
-  let meanAnomaly = 1.15;
+  // Старт: КА-A над Камчаткой (подобрано под geoToLocal / текстуру)
+  let meanAnomaly = (54 * Math.PI) / 180;
   let last = performance.now();
   let russiaPolys = null;
   let pulseT = 0;
@@ -88,16 +89,29 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
   controls.maxDistance = 36;
   controls.target.set(0, 0, 0);
 
-  /** Весь шар: РФ + Камчатка к камере */
-  function frameFullEarth(earthRotY) {
-    const lat = (32 * Math.PI) / 180;
-    const lon = (130 * Math.PI) / 180 + earthRotY;
-    const dist = EARTH_R * 3.55;
-    camera.position.set(
-      dist * Math.cos(lat) * Math.sin(lon),
-      dist * Math.sin(lat) + EARTH_R * 0.15,
-      dist * Math.cos(lat) * Math.cos(lon)
+  /**
+   * Гео → XYZ на сфере Three.js (совпадает с equirect UV текстуры).
+   * lon=-180…180: Камчатка ≈158°E — восточный край РФ, не Калининград.
+   */
+  function geoToLocal(latDeg, lonDeg, radius) {
+    const lat = (latDeg * Math.PI) / 180;
+    const lon = (lonDeg * Math.PI) / 180;
+    return new THREE.Vector3(
+      radius * Math.cos(lat) * Math.cos(lon),
+      radius * Math.sin(lat),
+      -radius * Math.cos(lat) * Math.sin(lon)
     );
+  }
+
+  function applyEarthSpin(local, earthRotY) {
+    return local.clone().applyAxisAngle(_yUp, earthRotY);
+  }
+
+  /** Весь шар, Камчатка (восток) к камере */
+  function frameFullEarth(earthRotY) {
+    const cam = applyEarthSpin(geoToLocal(42, 165, EARTH_R * 3.55), earthRotY);
+    cam.y += EARTH_R * 0.2;
+    camera.position.copy(cam);
     controls.target.set(0, 0, 0);
     controls.update();
     camera.lookAt(0, 0, 0);
@@ -329,10 +343,15 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
   }
 
   function latLonFromPos(p, earthRotY) {
-    const q = p.clone().normalize();
-    const lat = (Math.asin(q.y) * 180) / Math.PI;
-    let lon = (Math.atan2(q.x, q.z) * 180) / Math.PI;
-    lon = ((lon - (earthRotY * 180) / Math.PI + 540) % 360) - 180;
+    // world → earth-local (обратный Ry), затем lon = atan2(-z, x) как у geoToLocal
+    const c = Math.cos(earthRotY);
+    const s = Math.sin(earthRotY);
+    const x = c * p.x - s * p.z;
+    const y = p.y;
+    const z = s * p.x + c * p.z;
+    const r = Math.hypot(x, y, z) || 1;
+    const lat = (Math.asin(THREE.MathUtils.clamp(y / r, -1, 1)) * 180) / Math.PI;
+    const lon = (Math.atan2(-z, x) * 180) / Math.PI;
     return { lat, lon };
   }
 
@@ -435,20 +454,9 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
     metalness: 0.05,
   });
   const earth = new THREE.Mesh(new THREE.SphereGeometry(EARTH_R, 64, 48), earthMat);
-  earth.rotation.y = 0.15;
+  earth.rotation.y = 0;
   scene.add(earth);
   frameFullEarth(earth.rotation.y);
-
-  /** Локальные координаты на поверхности (без earth.rotation — маркеры children of earth) */
-  function latLonLocal(latDeg, lonDeg, radius) {
-    const lat = (latDeg * Math.PI) / 180;
-    const lon = (lonDeg * Math.PI) / 180;
-    return new THREE.Vector3(
-      radius * Math.cos(lat) * Math.sin(lon),
-      radius * Math.sin(lat),
-      radius * Math.cos(lat) * Math.cos(lon)
-    );
-  }
 
   function makeLabelSprite(text, color) {
     const c = document.createElement("canvas");
@@ -474,13 +482,13 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
     return spr;
   }
 
-  // Камчатка: шлюз / терминал / БС на поверхности
+  // Камчатка (восток РФ): разнесены на ~200–400 км — в одном пятне LEO, но не в одной точке
   const GROUND_SITES = [
     {
       id: "gw",
       name: "Шлюз",
-      full: "Шлюз (feeder Ka)",
-      lat: 53.05,
+      full: "Шлюз · Петропавловск-Камчатский",
+      lat: 53.02,
       lon: 158.65,
       color: 0xe02020,
       role: "gateway",
@@ -488,18 +496,18 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
     {
       id: "term",
       name: "Терминал",
-      full: "Терминал (user Ku/Ka)",
-      lat: 52.85,
-      lon: 158.25,
+      full: "Терминал · Усть-Камчатск",
+      lat: 56.23,
+      lon: 162.48,
       color: 0x5ce1ff,
       role: "terminal",
     },
     {
       id: "bs",
       name: "БС 5G",
-      full: "Базовая станция",
-      lat: 53.35,
-      lon: 159.1,
+      full: "БС · запад Камчатки",
+      lat: 54.35,
+      lon: 155.95,
       color: 0xffb020,
       role: "bs",
     },
@@ -509,7 +517,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
   earth.add(groundGroup);
   const groundMarkers = GROUND_SITES.map((site) => {
     const g = new THREE.Group();
-    const pos = latLonLocal(site.lat, site.lon, EARTH_R * 1.004);
+    const pos = geoToLocal(site.lat, site.lon, EARTH_R * 1.004);
     g.position.copy(pos);
     g.quaternion.setFromUnitVectors(_yUp, pos.clone().normalize());
 
@@ -632,8 +640,9 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
   }
   // Плоскости: A/B — одна; C — соседняя. Фазы подобраны так, чтобы хорда ≈0.7–1.0 тыс. км
   // (при 72° раньше линк почти всегда резала Земля — угловой запас LOS на 510 км ≈ ±22°).
-  const RAAN_A = 0;
-  const RAAN_C = (10 * Math.PI) / 180;
+  // Плоскость проходит над Камчаткой (~159°E); соседняя +10°
+  const RAAN_A = (169 * Math.PI) / 180;
+  const RAAN_C = (179 * Math.PI) / 180;
   addOrbitLine(RAAN_A, 0.7);
   addOrbitLine(RAAN_C, 0.4);
 
@@ -917,9 +926,9 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
     const phaseADeg = ((((uA * 180) / Math.PI) % 360) + 360) % 360;
     const phaseBDeg = ((((uB * 180) / Math.PI) % 360) + 360) % 360;
     const phaseCDeg = ((((uC * 180) / Math.PI) % 360) + 360) % 360;
-    fillSatCol("a", llA.lat, llA.lon, phaseADeg, "плоскость 0°");
-    fillSatCol("b", llB.lat, llB.lon, phaseBDeg, "плоскость 0° · +фаза");
-    fillSatCol("c", llC.lat, llC.lon, phaseCDeg, "плоскость +10°");
+    fillSatCol("a", llA.lat, llA.lon, phaseADeg, "RAAN 169°");
+    fillSatCol("b", llB.lat, llB.lon, phaseBDeg, "RAAN 169° · +фаза");
+    fillSatCol("c", llC.lat, llC.lon, phaseCDeg, "RAAN 179°");
 
     const over = overRussiaPrecise(llA.lat, llA.lon);
     const realDt = playing ? dt * timeScale * (PERIOD_REAL_S / PERIOD_VIS_S) : 0;
