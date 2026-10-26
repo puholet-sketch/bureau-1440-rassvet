@@ -468,6 +468,16 @@ body {
   color: var(--ember);
 }
 
+#o3-laser[data-zone="ru"] {
+  color: var(--laser);
+  font-size: 1.05rem;
+}
+
+#o3-laser[data-zone="out"] {
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
 .o3-vis-note {
   margin: 0.75rem 0 0;
   font-size: 0.78rem;

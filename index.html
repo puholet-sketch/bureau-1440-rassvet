@@ -911,28 +911,26 @@
 
       <section class="orbit-theater" id="orbit">
         <div class="block-head">
-          <p class="section-tag">3D · один виток</p>
-          <h2>Как один спутник летит вокруг Земли</h2>
+          <p class="section-tag">3D · три КА + лазер</p>
+          <h2>Как летит мини-группировка и лазерный ISL</h2>
           <p class="block-lead">
-            Один КА «Рассвет»: круговая орбита ~510&nbsp;км, i≈82.3°. Пунктир на сцене — именно эта орбита.
-            На шаре — страны с границами (Natural Earth); красным выделена Россия. Стрелки — силы и скорость.
+            Весь шар: три КА «Рассвет» на ~510&nbsp;км, i≈82.3°. A и B — одна плоскость, C — соседняя (ΔRAAN≈30°).
+            Голубые линии — лазер между аппаратами, если Земля не перекрывает луч. Стрелки сил — у КА-A.
           </p>
         </div>
 
         <div class="orbit-shell">
           <div class="orbit-stage orbit-stage--3d">
-            <div id="orbit3d-root" class="orbit3d-root" role="img" aria-label="3D анимация одного спутника Рассвет вокруг Земли"></div>
+            <div id="orbit3d-root" class="orbit3d-root" role="img" aria-label="3D: три спутника Рассвет и лазерные линки"></div>
             <aside class="orbit-hud" aria-label="Легенда 3D">
-              <span class="hud-chip"><i class="hud-dot hud-dot--sat"></i> КА «Рассвет»</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--sat"></i> A красный · B голубой · C жёлтый</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--laser"></i> Лазер ISL + пакет</span>
               <span class="hud-chip"><i class="hud-dot hud-dot--ru"></i> Красное — Россия</span>
-              <span class="hud-chip"><i class="hud-dot hud-dot--land"></i> Зелёное — другие страны</span>
-              <span class="hud-chip"><i class="hud-dot hud-dot--track"></i> Пунктир — орбита Kepler</span>
-              <span class="hud-chip"><i class="hud-dot hud-dot--foot"></i> Жёлтое — пятно связи</span>
-              <span class="hud-chip"><i class="hud-dot hud-dot--g"></i> Красная стрелка — тяготение</span>
-              <span class="hud-chip"><i class="hud-dot hud-dot--v"></i> Голубая — скорость</span>
-              <span class="hud-chip"><i class="hud-dot hud-dot--d"></i> Оранжевая — drag</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--land"></i> Другие страны</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--track"></i> Пунктир — плоскости орбит</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--foot"></i> Пятно связи</span>
             </aside>
-            <p class="orbit-live">Мышь: вращать · колёсико: зум · учебная модель Kepler</p>
+            <p class="orbit-live">Мышь: вращать · колёсико: зум · весь шар · Kepler + ISL</p>
           </div>
           <div class="orbit-side">
             <div class="orbit-controls">
@@ -940,16 +938,19 @@
               <button type="button" class="btn btn--ghost" id="o3-slow">Скорость ×1</button>
             </div>
             <div class="orbit-metric">
-              <div class="label">Где аппарат сейчас</div>
+              <div class="label">Где КА-A сейчас</div>
               <p class="big o3-over" id="o3-over">—</p>
+              <div class="label" style="margin-top:0.75rem">Лазерная mesh</div>
+              <p class="big o3-over" id="o3-laser">—</p>
               <dl class="o3-telemetry">
                 <div><dt>Высота</dt><dd id="o3-alt">~510 км</dd></div>
                 <div><dt>Скорость</dt><dd id="o3-speed">~7.6 км/с</dd></div>
-                <div><dt>Широта</dt><dd id="o3-lat">—</dd></div>
-                <div><dt>Долгота</dt><dd id="o3-lon">—</dd></div>
+                <div><dt>Широта A</dt><dd id="o3-lat">—</dd></div>
+                <div><dt>Долгота A</dt><dd id="o3-lon">—</dd></div>
                 <div><dt>Период витка</dt><dd id="o3-period">~95 мин</dd></div>
                 <div><dt>Длина витка</dt><dd id="o3-orbit-len">~43 тыс. км</dd></div>
                 <div><dt>Наклонение</dt><dd>i ≈ 82.3°</dd></div>
+                <div><dt>Дальность ISL</dt><dd id="o3-laser-dist">—</dd></div>
                 <div><dt>Пролёт над РФ</dt><dd id="o3-pass-time">считаем…</dd></div>
                 <div><dt>Путь над РФ</dt><dd id="o3-pass-dist">считаем…</dd></div>
               </dl>
@@ -957,19 +958,19 @@
             </div>
             <div class="orbit-callouts">
               <div class="orbit-callout">
-                <strong>Почему не падает</strong>
-                Тяготение тянет к центру Земли, но скорость ~7,6 км/с постоянно
-                «промахивается» мимо — это и есть орбита (свободное падение по кругу).
+                <strong>Лазер ISL</strong>
+                Луч идёт напрямую КА↔КА. Если хорда пересекает Землю — линка нет (тусклая линия).
+                Белая точка — учебный «пакет»; в жизни свет летит за ~мс.
               </div>
               <div class="orbit-callout">
-                <strong>Что делают силы</strong>
-                Красная стрелка — гравитация. Голубая — куда летит. Оранжевая — слабый
-                drag LEO (снижает орбиту → нужна плазменная ДУ).
+                <strong>Зачем 3 аппарата</strong>
+                A–B: соседи в одной плоскости. A–C / B–C: межплоскостной линк.
+                Так пакет прыгает по mesh, не спускаясь на шлюз каждый раз.
               </div>
               <div class="orbit-callout">
-                <strong>Зачем наклонение 82.3°</strong>
-                Почти полярная орбита: витки через Арктику и Севморпуть; над РФ бывает
-                часто, но один КА не закрывает страну 24/7.
+                <strong>Наклонение 82.3°</strong>
+                Почти полярная орбита: Арктика и Севморпуть. Один КА не закрывает РФ 24/7 —
+                нужна сетка плоскостей.
               </div>
             </div>
           </div>
@@ -983,8 +984,8 @@
           <p class="section-tag">2D · вся группировка</p>
           <h2>Потом — десятки и сотни КА</h2>
           <p class="block-lead">
-            Пока 3D учит одному аппарату. Ниже — схема фазирования: ~31 vs цель ~252.
-            Следующий шаг: несколько КА + лазер + сигнал с Земли.
+            Выше — 3 КА и лазер. Ниже вся схема фазирования: ~31 vs цель ~252.
+            Дальше можно добавить сигнал Земля→КА→КА→Земля.
           </p>
         </div>
 
