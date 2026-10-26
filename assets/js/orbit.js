@@ -68,7 +68,8 @@
   }
 
   function satPos(s, time) {
-    const u = s.mean0 + time * 0.78;
+    // ~0.22 рад/с → полный виток ≈28 с (раньше 0.78 ≈8 с — слишком быстро)
+    const u = s.mean0 + time * 0.22;
     const cosu = Math.cos(u);
     const sinu = Math.sin(u);
     const cosi = Math.cos(s.iRad);
