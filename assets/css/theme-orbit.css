@@ -468,6 +468,40 @@ body {
   color: var(--ember);
 }
 
+.o3-vis-note {
+  margin: 0.75rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.orbit-facts {
+  margin-top: 1.25rem;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--line);
+  background: rgba(12, 18, 28, 0.55);
+  color: var(--text);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.orbit-facts p {
+  margin: 0 0 0.75rem;
+}
+
+.orbit-facts p:last-child {
+  margin-bottom: 0;
+}
+
+.orbit-facts strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.hud-dot--land {
+  background: #2d6a4f;
+}
+
 .hud-dot--g {
   background: var(--crimson);
 }

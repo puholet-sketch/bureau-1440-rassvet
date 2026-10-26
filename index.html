@@ -914,8 +914,8 @@
           <p class="section-tag">3D · один виток</p>
           <h2>Как один спутник летит вокруг Земли</h2>
           <p class="block-lead">
-            Сначала один КА «Рассвет» на ~510 км, i≈82.3°. Красное на шаре — Россия.
-            Стрелки — силы и скорость. Дальше добавим всю группировку и путь сигнала.
+            Один КА «Рассвет»: круговая орбита ~510&nbsp;км, i≈82.3°. Пунктир на сцене — именно эта орбита.
+            На шаре — страны с границами (Natural Earth); красным выделена Россия. Стрелки — силы и скорость.
           </p>
         </div>
 
@@ -925,11 +925,12 @@
             <aside class="orbit-hud" aria-label="Легенда 3D">
               <span class="hud-chip"><i class="hud-dot hud-dot--sat"></i> КА «Рассвет»</span>
               <span class="hud-chip"><i class="hud-dot hud-dot--ru"></i> Красное — Россия</span>
-              <span class="hud-chip"><i class="hud-dot hud-dot--track"></i> Пунктир — орбита</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--land"></i> Зелёное — другие страны</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--track"></i> Пунктир — орбита Kepler</span>
               <span class="hud-chip"><i class="hud-dot hud-dot--foot"></i> Жёлтое — пятно связи</span>
               <span class="hud-chip"><i class="hud-dot hud-dot--g"></i> Красная стрелка — тяготение</span>
               <span class="hud-chip"><i class="hud-dot hud-dot--v"></i> Голубая — скорость</span>
-              <span class="hud-chip"><i class="hud-dot hud-dot--d"></i> Оранжевая — drag (атмосфера)</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--d"></i> Оранжевая — drag</span>
             </aside>
             <p class="orbit-live">Мышь: вращать · колёсико: зум · учебная модель Kepler</p>
           </div>
@@ -947,8 +948,12 @@
                 <div><dt>Широта</dt><dd id="o3-lat">—</dd></div>
                 <div><dt>Долгота</dt><dd id="o3-lon">—</dd></div>
                 <div><dt>Период витка</dt><dd id="o3-period">~95 мин</dd></div>
+                <div><dt>Длина витка</dt><dd id="o3-orbit-len">~43 тыс. км</dd></div>
                 <div><dt>Наклонение</dt><dd>i ≈ 82.3°</dd></div>
+                <div><dt>Пролёт над РФ</dt><dd id="o3-pass-time">считаем…</dd></div>
+                <div><dt>Путь над РФ</dt><dd id="o3-pass-dist">считаем…</dd></div>
               </dl>
+              <p class="o3-vis-note" id="o3-vis-note"></p>
             </div>
             <div class="orbit-callouts">
               <div class="orbit-callout">
@@ -968,6 +973,10 @@
               </div>
             </div>
           </div>
+        </div>
+
+        <div class="orbit-facts" id="o3-facts" aria-live="polite">
+          <p>Загружаем карту стран и считаем пролёты над РФ…</p>
         </div>
 
         <div class="block-head" style="margin-top: 2rem">
