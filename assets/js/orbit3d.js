@@ -56,7 +56,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
   const EARTH_R = EARTH_R_KM * SCALE;
   const ORBIT_R = ORBIT_R_KM * SCALE;
   const LOS_MIN_R = EARTH_R * 1.06; // луч не должен задевать атмосферу
-  const MAX_ISL_KM = 1000; // учебный потолок дальности ISL «Рассвет»
+  let MAX_ISL_KM = 1005; // тест Бюро: до ~1005 км (обновится из constellation.json)
 
   const PERIOD_REAL_S = 2 * Math.PI * Math.sqrt(Math.pow(ORBIT_R_KM * 1000, 3) / 3.986e14);
   const PERIOD_VIS_S = 28;
@@ -638,13 +638,20 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
     scene.add(line);
     return line;
   }
-  // Плоскости: A/B — одна; C — соседняя. Фазы подобраны так, чтобы хорда ≈0.7–1.0 тыс. км
-  // (при 72° раньше линк почти всегда резала Земля — угловой запас LOS на 510 км ≈ ±22°).
-  // Плоскость проходит над Камчаткой (~159°E); соседняя +10°
-  const RAAN_A = (169 * Math.PI) / 180;
-  const RAAN_C = (179 * Math.PI) / 180;
-  addOrbitLine(RAAN_A, 0.7);
-  addOrbitLine(RAAN_C, 0.4);
+  const BASE_RAAN = (169 * Math.PI) / 180; // плоскость над Камчаткой
+  const orbitLines = [];
+  function clearOrbitLines() {
+    while (orbitLines.length) {
+      const L = orbitLines.pop();
+      scene.remove(L);
+      L.geometry.dispose();
+      L.material.dispose();
+    }
+  }
+  function setOrbitPlanes(raans) {
+    clearOrbitLines();
+    raans.forEach((raan, i) => orbitLines.push(addOrbitLine(raan, i === 0 ? 0.7 : 0.35)));
+  }
 
   function makeSat(accentColor, scale = 1) {
     const g = new THREE.Group();
@@ -670,13 +677,14 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
     return g;
   }
 
-  // Фаза ≈ угол вдоль витка. ~8° на R=6881 км → хорда ≈960 км (в пределах MAX_ISL_KM)
-  const PHASE_A = 0;
-  const PHASE_B = (8 * Math.PI) / 180;
-  const PHASE_C = (5 * Math.PI) / 180;
-  const satA = makeSat(0xe02020, 1.15);
-  const satB = makeSat(0x5ce1ff, 1);
-  const satC = makeSat(0xffb020, 1);
+  function makeFleetDot(color) {
+    const m = new THREE.Mesh(
+      new THREE.SphereGeometry(0.045, 10, 10),
+      new THREE.MeshBasicMaterial({ color })
+    );
+    scene.add(m);
+    return m;
+  }
 
   const footMat = new THREE.MeshBasicMaterial({
     color: 0xffb020,
@@ -686,11 +694,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
     depthWrite: false,
   });
   const footA = new THREE.Mesh(new THREE.CircleGeometry(EARTH_R * 0.2, 40), footMat);
-  const footB = new THREE.Mesh(new THREE.CircleGeometry(EARTH_R * 0.16, 32), footMat.clone());
-  footB.material.opacity = 0.18;
-  const footC = new THREE.Mesh(new THREE.CircleGeometry(EARTH_R * 0.16, 32), footMat.clone());
-  footC.material.opacity = 0.18;
-  scene.add(footA, footB, footC);
+  scene.add(footA);
 
   const beamA = new THREE.Line(
     new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]),
@@ -706,7 +710,6 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
   const arrowD = makeArrow(0xffb020);
   scene.add(arrowG, arrowV, arrowD);
 
-  // Жирный лазер (цилиндр — LineBasic linewidth в WebGL почти не работает)
   function makeLaserLink() {
     const tube = new THREE.Mesh(
       new THREE.CylinderGeometry(0.011, 0.011, 1, 8, 1, true),
@@ -740,9 +743,143 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
     scene.add(pulse2);
     return { tube, glow, pulse, pulse2 };
   }
-  const linkAB = makeLaserLink();
-  const linkAC = makeLaserLink();
-  const linkBC = makeLaserLink();
+
+  let constellation = null;
+  let fleetMode = "now"; // now | demo | target
+  let fleet = []; // { mesh, raan, mean0, plane, slot, detailed? }
+  let laserPool = [];
+  const planeColors = [0xe02020, 0x5ce1ff, 0xffb020, 0xb0ff7a, 0xff80c0, 0xa090ff];
+
+  function ensureLaserPool(n) {
+    while (laserPool.length < n) laserPool.push(makeLaserLink());
+    for (let i = n; i < laserPool.length; i++) {
+      laserPool[i].tube.visible = false;
+      laserPool[i].glow.visible = false;
+      laserPool[i].pulse.visible = false;
+      laserPool[i].pulse2.visible = false;
+    }
+  }
+
+  function clearFleetMeshes() {
+    fleet.forEach((s) => {
+      scene.remove(s.mesh);
+      s.mesh.traverse((o) => {
+        if (o.geometry) o.geometry.dispose();
+        if (o.material) {
+          if (Array.isArray(o.material)) o.material.forEach((m) => m.dispose());
+          else o.material.dispose();
+        }
+      });
+    });
+    fleet = [];
+  }
+
+  function buildFleet(mode) {
+    clearFleetMeshes();
+    const base = constellation || {
+      current: { model: { planes: 3, per_plane: 10, odd_plane_phase_offset: true }, active_approx: 31 },
+      target_company: { model: { planes: 12, per_plane: 21, odd_plane_phase_offset: true }, active_approx: 252 },
+    };
+
+    if (mode === "demo") {
+      setOrbitPlanes([BASE_RAAN, BASE_RAAN + (10 * Math.PI) / 180]);
+      fleet = [
+        { mesh: makeSat(0xe02020, 1.15), raan: BASE_RAAN, mean0: 0, plane: 0, slot: 0, id: "A", detailed: true },
+        {
+          mesh: makeSat(0x5ce1ff, 1),
+          raan: BASE_RAAN,
+          mean0: (8 * Math.PI) / 180,
+          plane: 0,
+          slot: 1,
+          id: "B",
+          detailed: true,
+        },
+        {
+          mesh: makeSat(0xffb020, 1),
+          raan: BASE_RAAN + (10 * Math.PI) / 180,
+          mean0: (5 * Math.PI) / 180,
+          plane: 1,
+          slot: 0,
+          id: "C",
+          detailed: true,
+        },
+      ];
+      ensureLaserPool(3);
+      return;
+    }
+
+    const cfg = mode === "target" ? base.target_company.model : base.current.model;
+    const planes = cfg.planes;
+    const per = cfg.per_plane;
+    const showN = mode === "target" ? Math.min(planes * per, 84) : planes * per;
+    const raans = [];
+    for (let p = 0; p < planes; p++) raans.push(BASE_RAAN + (p / planes) * Math.PI * 2);
+    setOrbitPlanes(mode === "target" ? raans.filter((_, i) => i % 2 === 0) : raans);
+
+    let n = 0;
+    for (let p = 0; p < planes && n < showN; p++) {
+      for (let k = 0; k < per && n < showN; k++) {
+        const mean0 =
+          (k / per) * Math.PI * 2 + (cfg.odd_plane_phase_offset && p % 2 ? Math.PI / per : 0);
+        const detailed = p === 0 && k < 3;
+        const mesh = detailed
+          ? makeSat(planeColors[p % planeColors.length], k === 0 ? 1.1 : 0.85)
+          : makeFleetDot(planeColors[p % planeColors.length]);
+        fleet.push({
+          mesh,
+          raan: raans[p],
+          mean0,
+          plane: p,
+          slot: k,
+          id: `P${p}-${k}`,
+          detailed,
+        });
+        n++;
+      }
+    }
+    // ISL: сосед по плоскости + один межплоскостной на слот
+    ensureLaserPool(Math.min(showN + planes, 60));
+  }
+
+  const elFleetCount = document.getElementById("o3-fleet-count");
+  const elFleetModel = document.getElementById("o3-fleet-model");
+  const demoGrid = document.getElementById("o3-demo-grid");
+  const fleetPanel = document.getElementById("o3-fleet-panel");
+
+  function applyMode(mode) {
+    fleetMode = mode;
+    buildFleet(mode);
+    document.querySelectorAll("[data-o3-mode]").forEach((btn) => {
+      btn.classList.toggle("is-active", btn.getAttribute("data-o3-mode") === mode);
+    });
+    if (demoGrid) demoGrid.hidden = mode !== "demo";
+    if (fleetPanel) fleetPanel.hidden = mode === "demo";
+    if (elFleetCount && constellation) {
+      const n =
+        mode === "demo"
+          ? 3
+          : mode === "target"
+            ? constellation.target_company.active_approx
+            : constellation.current.active_approx;
+      const shown = fleet.length;
+      elFleetCount.textContent =
+        mode === "demo" ? "3 (учебные)" : `~${n} (в кадре ${shown})`;
+    }
+    if (elFleetModel && constellation) {
+      const m =
+        mode === "demo"
+          ? "соседи для ISL"
+          : mode === "target"
+            ? `${constellation.target_company.model.planes} пл. × ${constellation.target_company.model.per_plane} КА`
+            : `${constellation.current.model.planes} пл. × ${constellation.current.model.per_plane} КА · ΔRAAN ${constellation.current.model.raan_step_deg}° · Δфаза ${constellation.current.model.phase_step_deg}°`;
+      elFleetModel.textContent = m;
+    }
+  }
+
+  buildFleet("now");
+  document.querySelectorAll("[data-o3-mode]").forEach((btn) => {
+    btn.addEventListener("click", () => applyMode(btn.getAttribute("data-o3-mode")));
+  });
 
   if (elPeriod) elPeriod.textContent = `~${Math.round(PERIOD_REAL_S / 60)} мин`;
   if (elOrbitLen) elOrbitLen.textContent = fmtKm(ORBIT_LEN_KM);
@@ -798,17 +935,15 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
   let overAccumS = 0;
   let overActive = false;
 
-  function placeSat(mesh, foot, u, raan, withBeam) {
-    const pos = satPosition(u, raan);
-    const vel = satVelocity(u, raan);
-    mesh.position.copy(pos);
-    mesh.lookAt(pos.clone().add(vel));
-    mesh.up.copy(pos.clone().normalize());
-    const nadir = pos.clone().normalize().multiplyScalar(EARTH_R * 1.002);
-    foot.position.copy(nadir);
-    foot.lookAt(0, 0, 0);
-    if (withBeam) beamA.geometry.setFromPoints([pos, nadir]);
-    return { pos, vel };
+  function placeFleetSat(s, u) {
+    const pos = satPosition(u, s.raan);
+    const vel = satVelocity(u, s.raan);
+    s.mesh.position.copy(pos);
+    if (s.detailed) {
+      s.mesh.lookAt(pos.clone().add(vel));
+      s.mesh.up.copy(pos.clone().normalize());
+    }
+    return { pos, vel, sat: s };
   }
 
   function updateLink(link, a, b, active, phase) {
@@ -870,67 +1005,91 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
     last = now;
     if (playing) {
       meanAnomaly += ((Math.PI * 2) / PERIOD_VIS_S) * dt * timeScale;
-      earth.rotation.y += 0.003 * dt * timeScale;
+      earth.rotation.y += 0.002 * dt * timeScale;
       pulseT += dt * timeScale * 0.55;
     }
 
-    const uA = meanAnomaly + PHASE_A;
-    const uB = meanAnomaly + PHASE_B;
-    const uC = meanAnomaly + PHASE_C;
-
-    const A = placeSat(satA, footA, uA, RAAN_A, true);
-    const B = placeSat(satB, footB, uB, RAAN_A, false);
-    const C = placeSat(satC, footC, uC, RAAN_C, false);
-
-    const gravDir = A.pos.clone().normalize().negate();
-    arrowG.position.copy(A.pos);
-    arrowG.setDirection(gravDir);
-    arrowG.setLength(0.55, 0.1, 0.06);
-    arrowV.position.copy(A.pos);
-    arrowV.setDirection(A.vel);
-    arrowV.setLength(0.5, 0.1, 0.06);
-    arrowD.position.copy(A.pos);
-    arrowD.setDirection(A.vel.clone().negate());
-    arrowD.setLength(0.22, 0.07, 0.04);
-
-    const dAB = A.pos.distanceTo(B.pos) / SCALE;
-    const dAC = A.pos.distanceTo(C.pos) / SCALE;
-    const dBC = B.pos.distanceTo(C.pos) / SCALE;
-    const okAB = dAB <= MAX_ISL_KM && hasLaserLos(A.pos, B.pos);
-    const okAC = dAC <= MAX_ISL_KM && hasLaserLos(A.pos, C.pos);
-    const okBC = dBC <= MAX_ISL_KM && hasLaserLos(B.pos, C.pos);
-    updateLink(linkAB, A.pos, B.pos, okAB, pulseT);
-    updateLink(linkAC, A.pos, C.pos, okAC, pulseT + 0.33);
-    updateLink(linkBC, B.pos, C.pos, okBC, pulseT + 0.66);
-
-    function linkReason(d, a, b) {
-      if (d > MAX_ISL_KM) return `далеко ${Math.round(d)} км > ${MAX_ISL_KM}`;
-      if (!hasLaserLos(a, b)) return `Земля в хорде (${Math.round(d)} км)`;
-      return null;
+    const placed = fleet.map((s) => placeFleetSat(s, meanAnomaly + s.mean0));
+    const primary = placed.find((p) => p.sat.detailed) || placed[0];
+    if (primary) {
+      const nadir = primary.pos.clone().normalize().multiplyScalar(EARTH_R * 1.002);
+      footA.position.copy(nadir);
+      footA.lookAt(0, 0, 0);
+      beamA.geometry.setFromPoints([primary.pos, nadir]);
+      const gravDir = primary.pos.clone().normalize().negate();
+      arrowG.position.copy(primary.pos);
+      arrowG.setDirection(gravDir);
+      arrowG.setLength(0.55, 0.1, 0.06);
+      arrowV.position.copy(primary.pos);
+      arrowV.setDirection(primary.vel);
+      arrowV.setLength(0.5, 0.1, 0.06);
+      arrowD.position.copy(primary.pos);
+      arrowD.setDirection(primary.vel.clone().negate());
+      arrowD.setLength(0.22, 0.07, 0.04);
     }
 
-    const activeLinks = [
-      okAB && { name: "A↔B", d: dAB },
-      okAC && { name: "A↔C", d: dAC },
-      okBC && { name: "B↔C", d: dBC },
-    ].filter(Boolean);
-    const blocked = [
-      !okAB && `A↔B: ${linkReason(dAB, A.pos, B.pos)}`,
-      !okAC && `A↔C: ${linkReason(dAC, A.pos, C.pos)}`,
-      !okBC && `B↔C: ${linkReason(dBC, B.pos, C.pos)}`,
-    ].filter(Boolean);
+    // ISL: сосед по плоскости (+ следующий слот); в demo — все пары detailed
+    const pairKeys = new Set();
+    const pairs = [];
+    function addPair(i, j) {
+      if (i === j) return;
+      const a = Math.min(i, j);
+      const b = Math.max(i, j);
+      const key = `${a}-${b}`;
+      if (pairKeys.has(key)) return;
+      pairKeys.add(key);
+      pairs.push([a, b]);
+    }
+    if (fleetMode === "demo") {
+      for (let i = 0; i < placed.length; i++) for (let j = i + 1; j < placed.length; j++) addPair(i, j);
+    } else {
+      const byPlane = new Map();
+      placed.forEach((p, idx) => {
+        const list = byPlane.get(p.sat.plane) || [];
+        list.push(idx);
+        byPlane.set(p.sat.plane, list);
+      });
+      byPlane.forEach((idxs) => {
+        idxs.sort((a, b) => fleet[a].slot - fleet[b].slot);
+        for (let t = 0; t < idxs.length; t++) addPair(idxs[t], idxs[(t + 1) % idxs.length]);
+      });
+      // редкий межплоскостной: тот же slot
+      for (let i = 0; i < placed.length; i++) {
+        for (let j = i + 1; j < placed.length; j++) {
+          if (fleet[i].plane + 1 === fleet[j].plane && fleet[i].slot === fleet[j].slot) addPair(i, j);
+        }
+      }
+    }
 
-    const llA = latLonFromPos(A.pos, earth.rotation.y);
-    const llB = latLonFromPos(B.pos, earth.rotation.y);
-    const llC = latLonFromPos(C.pos, earth.rotation.y);
-    const phaseADeg = ((((uA * 180) / Math.PI) % 360) + 360) % 360;
-    const phaseBDeg = ((((uB * 180) / Math.PI) % 360) + 360) % 360;
-    const phaseCDeg = ((((uC * 180) / Math.PI) % 360) + 360) % 360;
-    fillSatCol("a", llA.lat, llA.lon, phaseADeg, "RAAN 169°");
-    fillSatCol("b", llB.lat, llB.lon, phaseBDeg, "RAAN 169° · +фаза");
-    fillSatCol("c", llC.lat, llC.lon, phaseCDeg, "RAAN 179°");
+    let linkOn = 0;
+    let linkSample = "";
+    ensureLaserPool(pairs.length);
+    pairs.forEach(([i, j], n) => {
+      const a = placed[i].pos;
+      const b = placed[j].pos;
+      const d = a.distanceTo(b) / SCALE;
+      const ok = d <= MAX_ISL_KM && hasLaserLos(a, b);
+      updateLink(laserPool[n], a, b, ok, pulseT + n * 0.07);
+      if (ok) {
+        linkOn++;
+        if (!linkSample) linkSample = `${fleet[i].id}↔${fleet[j].id} ${Math.round(d)} км`;
+      }
+    });
 
-    const over = overRussiaPrecise(llA.lat, llA.lon);
+    if (fleetMode === "demo" && placed.length >= 3) {
+      const ids = ["a", "b", "c"];
+      placed.forEach((p, idx) => {
+        if (idx > 2) return;
+        const ll = latLonFromPos(p.pos, earth.rotation.y);
+        const u = meanAnomaly + p.sat.mean0;
+        const phaseDeg = ((((u * 180) / Math.PI) % 360) + 360) % 360;
+        const raanDeg = Math.round((((p.sat.raan * 180) / Math.PI) % 360) + 360) % 360;
+        fillSatCol(ids[idx], ll.lat, ll.lon, phaseDeg, `RAAN ${raanDeg}°`);
+      });
+    }
+
+    const llP = primary ? latLonFromPos(primary.pos, earth.rotation.y) : { lat: 0, lon: 0 };
+    const over = primary && overRussiaPrecise(llP.lat, llP.lon);
     const realDt = playing ? dt * timeScale * (PERIOD_REAL_S / PERIOD_VIS_S) : 0;
     if (over) {
       overAccumS += realDt;
@@ -942,46 +1101,34 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
     if (elAlt) elAlt.textContent = `~${ALT_KM} км`;
     if (elSpeed) elSpeed.textContent = `~${V_ORBIT_KMS.toFixed(1)} км/с`;
-    if (elLat) elLat.textContent = `${llA.lat.toFixed(1)}°`;
-    if (elLon) elLon.textContent = `${llA.lon.toFixed(1)}°`;
     if (elOver) {
       elOver.textContent = over
-        ? `пролёт РФ · ${fmtMin(overAccumS / 60)} · ${fmtKm(V_ORBIT_KMS * overAccumS)}`
-        : "смотрите столбцы A / B / C";
+        ? `ведущий над РФ · ${fmtMin(overAccumS / 60)}`
+        : `в кадре ${fleet.length} КА · режим ${fleetMode}`;
       elOver.dataset.zone = over ? "ru" : "out";
     }
 
     if (elLaser) {
-      if (!activeLinks.length) {
-        elLaser.textContent = blocked[0] || "нет линков";
+      if (!linkOn) {
+        elLaser.textContent = `0 ISL из ${pairs.length} кандидатов (дальность≤${MAX_ISL_KM} км + LOS)`;
         elLaser.dataset.zone = "out";
       } else {
-        const parts = activeLinks.map((l) => {
-          const ms = (l.d / C_KM_S) * 1000;
-          return `${l.name} ${Math.round(l.d)} км (~${ms.toFixed(1)} мс)`;
-        });
-        elLaser.textContent = `${activeLinks.length}/3 · ${parts.join(" · ")}`;
+        elLaser.textContent = `${linkOn}/${pairs.length} ISL · напр. ${linkSample}`;
         elLaser.dataset.zone = "ru";
       }
     }
 
-    // Радио Земля↔КА (Камчатка): угол места ≥ MIN_ELEV_DEG к ближайшему КА
-    const sats = [
-      { name: "A", pos: A.pos },
-      { name: "B", pos: B.pos },
-      { name: "C", pos: C.pos },
-    ];
     const groundActive = [];
     groundMarkers.forEach((m, idx) => {
       m.group.getWorldPosition(m.world);
       let best = null;
-      for (const s of sats) {
-        const elev = elevationDeg(m.world, s.pos);
-        const distKm = m.world.distanceTo(s.pos) / SCALE;
+      placed.forEach((p) => {
+        const elev = elevationDeg(m.world, p.pos);
+        const distKm = m.world.distanceTo(p.pos) / SCALE;
         if (elev >= MIN_ELEV_DEG && (!best || elev > best.elev)) {
-          best = { sat: s.name, elev, distKm, pos: s.pos };
+          best = { sat: p.sat.id, elev, distKm, pos: p.pos };
         }
-      }
+      });
       const on = !!best;
       updateRfLink(rfLinks[idx], m.world, on ? best.pos : m.world, on, pulseT + idx * 0.2);
       if (on) {
@@ -1004,5 +1151,40 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
     renderer.render(scene, camera);
     requestAnimationFrame(frame);
   }
+
+  fetch(new URL("../data/constellation.json", import.meta.url))
+    .then((r) => r.json())
+    .then((data) => {
+      constellation = data;
+      if (data.isl && data.isl.range_tested_km) MAX_ISL_KM = data.isl.range_tested_km.max;
+      const card = document.getElementById("o3-constellation-card");
+      if (card) {
+        const c = data.current;
+        const t = data.target_company;
+        const g = data.gov_plan;
+        const o = data.orbit;
+        card.innerHTML = `
+          <h3 class="o3-constel-title">Группировка «Рассвет» · факты</h3>
+          <p class="o3-constel-asof">сводка на ${data.as_of}</p>
+          <table class="o3-constel-table">
+            <thead><tr><th></th><th>Сейчас</th><th>Цель компании</th><th>Госплан</th></tr></thead>
+            <tbody>
+              <tr><th>Активных КА</th><td>~${c.active_approx}</td><td>~${t.active_approx}</td><td>${g.active}</td></tr>
+              <tr><th>Модель плоскостей</th><td>${c.model.planes} × ${c.model.per_plane}</td><td>${t.model.planes} × ${t.model.per_plane}</td><td>—</td></tr>
+              <tr><th>Шаг RAAN</th><td>~${c.model.raan_step_deg}°</td><td>~${t.model.raan_step_deg}°</td><td>—</td></tr>
+              <tr><th>Шаг фазы</th><td>~${c.model.phase_step_deg}°</td><td>~${t.model.phase_step_deg.toFixed(1)}°</td><td>—</td></tr>
+            </tbody>
+          </table>
+          <p><strong>Орбита серии:</strong> h≈${o.alt_working_km}&nbsp;км (маркетинг ${o.alt_marketing_km}),
+            i≈${o.inclination_deg}°, период ~${o.period_min}&nbsp;мин, v≈${o.speed_km_s}&nbsp;км/с.
+            ISL: тесты ${data.isl.range_tested_km.min}–${data.isl.range_tested_km.max}&nbsp;км @ ${data.isl.rate_gbps_qualified}&nbsp;Гбит/с.</p>
+          <p class="note">${data.disclaimer}</p>
+        `;
+        if (typeof window.applyGlossary === "function") window.applyGlossary(card);
+      }
+      applyMode(fleetMode);
+    })
+    .catch(() => applyMode(fleetMode));
+
   requestAnimationFrame(frame);
 })();

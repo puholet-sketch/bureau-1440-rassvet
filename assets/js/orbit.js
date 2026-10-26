@@ -15,10 +15,34 @@
   const CY = 286;
   const R = 196;
 
-  const MODES = {
-    now: { label: "Сейчас ~31", planes: 3, perPlane: 10, note: "Ранняя серия: короткие окна, много слепых зон на РФ" },
-    target: { label: "Цель ~252", planes: 12, perPlane: 21, note: "12 плоскостей × 21 КА — заявка на бесшовность страны" },
+  let MODES = {
+    now: { label: "Сейчас ~31", planes: 3, perPlane: 10, note: "Ранняя серия: 3×10, ΔRAAN~120°, Δфаза~36° · много слепых зон" },
+    target: { label: "Цель ~252", planes: 12, perPlane: 21, note: "12×21 — заявка на бесшовность; госплан 292" },
   };
+
+  fetch("data/constellation.json")
+    .then((r) => r.json())
+    .then((data) => {
+      if (!data) return;
+      MODES.now = {
+        label: `Сейчас ~${data.current.active_approx}`,
+        planes: data.current.model.planes,
+        perPlane: data.current.model.per_plane,
+        note: data.current.model.note || MODES.now.note,
+      };
+      MODES.target = {
+        label: `Цель ~${data.target_company.active_approx}`,
+        planes: data.target_company.model.planes,
+        perPlane: data.target_company.model.per_plane,
+        note: `Госплан ${data.gov_plan.active}; запуски до ~${data.gov_plan.launches_to_2030}`,
+      };
+      const nowBtn = document.querySelector('[data-orbit-mode="now"]');
+      const tgtBtn = document.querySelector('[data-orbit-mode="target"]');
+      if (nowBtn) nowBtn.textContent = MODES.now.label;
+      if (tgtBtn) tgtBtn.textContent = MODES.target.label;
+      if (typeof setMode === "function") setMode(mode);
+    })
+    .catch(() => {});
 
   let mode = "now";
   let simTime = 0;

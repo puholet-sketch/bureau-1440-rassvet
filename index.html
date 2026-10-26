@@ -911,23 +911,26 @@
 
       <section class="orbit-theater" id="orbit">
         <div class="block-head">
-          <p class="section-tag">3D · три КА + Земля</p>
-          <h2>Мини-группировка, лазер ISL и связь с Камчаткой</h2>
+          <p class="section-tag">3D · группировка + Земля</p>
+          <h2>Реальная численность, орбиты, фазы и Камчатка</h2>
           <p class="block-lead">
-            Три КА на ~510&nbsp;км, i≈82.3°. Наведите на подчёркнутые слова — подсказки.
-            На Камчатке: <span class="term" tabindex="0" data-tip="Наземная станция feeder (часто Ka): широкий канал КА↔ядро сети/интернет.">шлюз</span>,
-            <span class="term" tabindex="0" data-tip="Абонентское устройство: user-link к спутнику.">терминал</span> и
-            <span class="term" tabindex="0" data-tip="Наземная базовая станция; в модели может ходить в NTN через КА при пролёте.">БС</span>
-            на поверхности. Красный луч — <span class="term" tabindex="0" data-tip="Inter-Satellite Link — лазер между спутниками.">ISL</span>;
-            цветные — радио Земля↔КА.
+            По умолчанию — модель <strong>сейчас ~31 КА</strong> (3 плоскости × 10, шагфаза ~36°, ΔRAAN ~120°).
+            Режим «3 КА» — разбор лазера. На Камчатке:
+            <span class="term" tabindex="0" data-tip="Наземная станция feeder (часто Ka): широкий канал КА↔ядро сети/интернет.">шлюз</span>,
+            <span class="term" tabindex="0" data-tip="Абонентское устройство: user-link к спутнику.">терминал</span>,
+            <span class="term" tabindex="0" data-tip="Наземная базовая станция; в модели может ходить в NTN через КА при пролёте.">БС</span>.
           </p>
+        </div>
+
+        <div class="o3-constellation-card" id="o3-constellation-card" aria-live="polite">
+          <p>Загружаем параметры группировки…</p>
         </div>
 
         <div class="orbit-shell">
           <div class="orbit-stage orbit-stage--3d">
-            <div id="orbit3d-root" class="orbit3d-root" role="img" aria-label="3D: три спутника, лазер и наземные станции Камчатки"></div>
+            <div id="orbit3d-root" class="orbit3d-root" role="img" aria-label="3D группировка Рассвет и Камчатка"></div>
             <aside class="orbit-hud" aria-label="Легенда 3D">
-              <span class="hud-chip"><i class="hud-dot hud-dot--sat"></i> A · B · C — КА</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--sat"></i> КА по плоскостям</span>
               <span class="hud-chip"><i class="hud-dot hud-dot--g"></i> Лазер ISL</span>
               <span class="hud-chip"><i class="hud-dot hud-dot--gw"></i> Шлюз</span>
               <span class="hud-chip"><i class="hud-dot hud-dot--term"></i> Терминал</span>
@@ -938,22 +941,31 @@
           </div>
           <div class="orbit-side">
             <div class="orbit-controls">
+              <button type="button" class="btn btn--ghost is-active" data-o3-mode="now">Сейчас ~31</button>
+              <button type="button" class="btn btn--ghost" data-o3-mode="target">Цель ~252</button>
+              <button type="button" class="btn btn--ghost" data-o3-mode="demo">Учебные 3</button>
               <button type="button" class="btn btn--light" id="o3-play">Пауза</button>
               <button type="button" class="btn btn--ghost" id="o3-slow">Скорость ×1</button>
             </div>
             <div class="orbit-metric">
-              <div class="label">Лазерная mesh (КА↔КА)</div>
+              <div class="label">Группировка в сцене</div>
+              <p class="big o3-over" id="o3-fleet-count">~31</p>
+              <p class="o3-vis-note" id="o3-fleet-model">3 пл. × 10 КА · ΔRAAN 120° · Δфаза 36°</p>
+              <div class="label" style="margin-top:0.7rem">Лазерная mesh (КА↔КА)</div>
               <p class="big o3-over" id="o3-laser">—</p>
               <div class="label" style="margin-top:0.7rem">Камчатка · радио Земля↔КА</div>
               <p class="big o3-over" id="o3-ground">—</p>
               <p class="o3-over" id="o3-over" hidden>—</p>
-              <div class="o3-sat-grid" role="group" aria-label="Телеметрия трёх КА">
+              <div id="o3-fleet-panel" class="o3-fleet-panel">
+                <p class="o3-vis-note">Цвет точки = орбитальная плоскость. Красные нити — ISL к соседу по фазе (и редкий межплоскостной на тот же слот). Точные RAAN серии не публичны — Walker-like модель.</p>
+              </div>
+              <div class="o3-sat-grid" id="o3-demo-grid" hidden role="group" aria-label="Телеметрия трёх КА">
                 <div class="o3-sat-col o3-sat-col--a">
                   <div class="o3-sat-name">КА-A</div>
                   <p class="o3-sat-where" id="o3-a-where">—</p>
                   <dl>
                     <div><dt><span class="term" tabindex="0" data-tip="Фаза (угол u) — где КА на кольце орбиты.">Фаза u</span></dt><dd id="o3-a-phase">—</dd></div>
-                    <div><dt>Плоскость</dt><dd id="o3-a-plane">RAAN 169°</dd></div>
+                    <div><dt>Плоскость</dt><dd id="o3-a-plane">—</dd></div>
                     <div><dt>Широта</dt><dd id="o3-a-lat">—</dd></div>
                     <div><dt>Долгота</dt><dd id="o3-a-lon">—</dd></div>
                   </dl>
@@ -963,7 +975,7 @@
                   <p class="o3-sat-where" id="o3-b-where">—</p>
                   <dl>
                     <div><dt>Фаза u</dt><dd id="o3-b-phase">—</dd></div>
-                    <div><dt>Плоскость</dt><dd id="o3-b-plane">RAAN 169° · +фаза</dd></div>
+                    <div><dt>Плоскость</dt><dd id="o3-b-plane">—</dd></div>
                     <div><dt>Широта</dt><dd id="o3-b-lat">—</dd></div>
                     <div><dt>Долгота</dt><dd id="o3-b-lon">—</dd></div>
                   </dl>
@@ -973,7 +985,7 @@
                   <p class="o3-sat-where" id="o3-c-where">—</p>
                   <dl>
                     <div><dt>Фаза u</dt><dd id="o3-c-phase">—</dd></div>
-                    <div><dt>Плоскость</dt><dd id="o3-c-plane">+10°</dd></div>
+                    <div><dt>Плоскость</dt><dd id="o3-c-plane">—</dd></div>
                     <div><dt>Широта</dt><dd id="o3-c-lat">—</dd></div>
                     <div><dt>Долгота</dt><dd id="o3-c-lon">—</dd></div>
                   </dl>
@@ -985,7 +997,7 @@
                 <div><dt>Период</dt><dd id="o3-period">~95 мин</dd></div>
                 <div><dt>Длина витка</dt><dd id="o3-orbit-len">~43 тыс. км</dd></div>
                 <div><dt>Наклонение</dt><dd>i ≈ 82.3°</dd></div>
-                <div><dt>Потолок ISL</dt><dd>≤ ~1000 км</dd></div>
+                <div><dt>Потолок ISL</dt><dd>≤ ~1005 км</dd></div>
                 <div><dt>Пролёт над РФ</dt><dd id="o3-pass-time">считаем…</dd></div>
                 <div><dt>Путь над РФ</dt><dd id="o3-pass-dist">считаем…</dd></div>
               </dl>
@@ -1023,7 +1035,7 @@
           <p class="section-tag">2D · вся группировка</p>
           <h2>Потом — десятки и сотни КА</h2>
           <p class="block-lead">
-            Выше — 3 КА, лазер и Камчатка (шлюз / терминал / БС). Ниже вся схема: ~31 vs цель ~252.
+            Та же модель численности (~31 / ~252), что и в 3D выше. Здесь — покрытие РФ пятнами связи.
           </p>
         </div>
 

@@ -499,6 +499,70 @@ body {
   cursor: help;
 }
 
+.o3-constellation-card {
+  margin: 0 0 1.25rem;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--line);
+  background: rgba(12, 18, 28, 0.55);
+  color: var(--text);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.o3-constel-title {
+  margin: 0 0 0.25rem;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+
+.o3-constel-asof {
+  margin: 0 0 0.75rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.o3-constel-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 0.85rem;
+  font-size: 0.82rem;
+}
+
+.o3-constel-table th,
+.o3-constel-table td {
+  padding: 0.4rem 0.5rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+.o3-constel-table thead th {
+  color: var(--muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.68rem;
+}
+
+.o3-constel-table tbody th {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.o3-constel-table td {
+  color: var(--ink);
+  font-family: var(--font-display);
+}
+
+.o3-fleet-panel {
+  margin: 0.5rem 0 0.75rem;
+}
+
+.orbit-controls .btn.is-active {
+  border-color: var(--crimson);
+  color: var(--ember);
+}
+
 .o3-sat-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
