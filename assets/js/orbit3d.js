@@ -38,8 +38,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
   scene.background = new THREE.Color(0x070a10);
   scene.fog = new THREE.FogExp2(0x070a10, 0.045);
 
-  const camera = new THREE.PerspectiveCamera(42, 1, 0.01, 80);
-  camera.position.set(4.2, 2.1, 3.4);
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.01, 80);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -48,9 +47,31 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
-  controls.minDistance = 2.2;
+  controls.minDistance = 2.15;
   controls.maxDistance = 12;
-  controls.target.set(0, 0, 0);
+
+  /** Географическая точка → мир (согласовано с latLonFromPos) */
+  function geoToWorld(latDeg, lonDeg, radius, earthRotY) {
+    const lat = (latDeg * Math.PI) / 180;
+    const lonWorld = (lonDeg * Math.PI) / 180 + earthRotY;
+    return new THREE.Vector3(
+      radius * Math.cos(lat) * Math.sin(lonWorld),
+      radius * Math.sin(lat),
+      radius * Math.cos(lat) * Math.cos(lonWorld)
+    );
+  }
+
+  /** Стартовый кадр: сверху на Россию, как на референсе */
+  function frameRussiaView(earthRotY) {
+    const focus = geoToWorld(58, 95, EARTH_R * 0.92, earthRotY);
+    const cam = geoToWorld(62, 100, EARTH_R * 2.55, earthRotY);
+    // чуть сместить «с севера», чтобы виток читался диагональю
+    cam.y += EARTH_R * 0.35;
+    camera.position.copy(cam);
+    controls.target.copy(focus);
+    controls.update();
+    camera.lookAt(focus);
+  }
 
   scene.add(new THREE.AmbientLight(0x6a7a90, 0.55));
   const sun = new THREE.DirectionalLight(0xfff2e0, 1.35);
@@ -163,9 +184,12 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
     metalness: 0.05,
   });
   const earth = new THREE.Mesh(new THREE.SphereGeometry(EARTH_R, 64, 48), earthMat);
-  // Three.js: +Y up; текстура: вращение чтобы ~95°E смотрела к камере в начале
-  earth.rotation.y = Math.PI * 0.45;
+  // Фиксируем ориентацию так, чтобы РФ была в кадре со старта
+  earth.rotation.y = 0.15;
   scene.add(earth);
+  frameRussiaView(earth.rotation.y);
+  // Спутник стартует у витка над высокими широтами РФ
+  meanAnomaly = 1.15;
 
   // Атмосфера
   const atmo = new THREE.Mesh(
@@ -298,7 +322,8 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
     last = now;
     if (playing) {
       meanAnomaly += ((Math.PI * 2) / PERIOD_VIS_S) * dt * timeScale;
-      earth.rotation.y += 0.015 * dt * timeScale; // слабое вращение Земли для живости
+      // Землю почти не крутим — РФ остаётся в кадре как на стартовом виде
+      earth.rotation.y += 0.004 * dt * timeScale;
     }
 
     const pos = satPosition(meanAnomaly);
