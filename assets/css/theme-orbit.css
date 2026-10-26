@@ -468,16 +468,35 @@ body {
   color: var(--ember);
 }
 
-#o3-laser[data-zone="ru"] {
+#o3-laser[data-zone="ru"],
+#o3-ground[data-zone="ru"] {
   color: var(--ember);
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1.35;
 }
 
-#o3-laser[data-zone="out"] {
+#o3-laser[data-zone="out"],
+#o3-ground[data-zone="out"] {
   color: var(--muted);
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1.35;
+}
+
+.hud-dot--gw {
+  background: var(--crimson);
+}
+
+.hud-dot--term {
+  background: var(--laser);
+}
+
+.hud-dot--bs {
+  background: var(--rf);
+}
+
+.orbit-theater .term {
+  border-bottom: 1px dotted rgba(251, 90, 90, 0.7);
+  cursor: help;
 }
 
 .o3-sat-grid {

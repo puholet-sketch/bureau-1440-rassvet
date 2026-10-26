@@ -911,24 +911,30 @@
 
       <section class="orbit-theater" id="orbit">
         <div class="block-head">
-          <p class="section-tag">3D · три КА + лазер</p>
-          <h2>Как летит мини-группировка и лазерный ISL</h2>
+          <p class="section-tag">3D · три КА + Земля</p>
+          <h2>Мини-группировка, лазер ISL и связь с Камчаткой</h2>
           <p class="block-lead">
-            Весь шар: три КА на ~510&nbsp;км, i≈82.3°. <strong>Фаза</strong> — угол вдоль витка;
-            A и B в одной плоскости (B сдвинут по фазе), C — соседняя плоскость. Красный луч — ISL ≤~1000&nbsp;км и без Земли в хорде.
+            Три КА на ~510&nbsp;км, i≈82.3°. Наведите на подчёркнутые слова — подсказки.
+            На Камчатке: <span class="term" tabindex="0" data-tip="Наземная станция feeder (часто Ka): широкий канал КА↔ядро сети/интернет.">шлюз</span>,
+            <span class="term" tabindex="0" data-tip="Абонентское устройство: user-link к спутнику.">терминал</span> и
+            <span class="term" tabindex="0" data-tip="Наземная базовая станция; в модели может ходить в NTN через КА при пролёте.">БС</span>
+            на поверхности. Красный луч — <span class="term" tabindex="0" data-tip="Inter-Satellite Link — лазер между спутниками.">ISL</span>;
+            цветные — радио Земля↔КА.
           </p>
         </div>
 
         <div class="orbit-shell">
           <div class="orbit-stage orbit-stage--3d">
-            <div id="orbit3d-root" class="orbit3d-root" role="img" aria-label="3D: три спутника Рассвет и лазерные линки"></div>
+            <div id="orbit3d-root" class="orbit3d-root" role="img" aria-label="3D: три спутника, лазер и наземные станции Камчатки"></div>
             <aside class="orbit-hud" aria-label="Легенда 3D">
-              <span class="hud-chip"><i class="hud-dot hud-dot--sat"></i> A красный · B голубой · C жёлтый</span>
-              <span class="hud-chip"><i class="hud-dot hud-dot--g"></i> Красный луч — лазер ISL</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--sat"></i> A · B · C — КА</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--g"></i> Лазер ISL</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--gw"></i> Шлюз</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--term"></i> Терминал</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--bs"></i> БС</span>
               <span class="hud-chip"><i class="hud-dot hud-dot--ru"></i> Россия</span>
-              <span class="hud-chip"><i class="hud-dot hud-dot--track"></i> Плоскости орбит</span>
             </aside>
-            <p class="orbit-live">Мышь: вращать · колёсико: зум · весь шар · Kepler + ISL</p>
+            <p class="orbit-live">Мышь: вращать · колёсико: зум · Камчатка на востоке РФ</p>
           </div>
           <div class="orbit-side">
             <div class="orbit-controls">
@@ -936,15 +942,17 @@
               <button type="button" class="btn btn--ghost" id="o3-slow">Скорость ×1</button>
             </div>
             <div class="orbit-metric">
-              <div class="label">Лазерная mesh</div>
+              <div class="label">Лазерная mesh (КА↔КА)</div>
               <p class="big o3-over" id="o3-laser">—</p>
+              <div class="label" style="margin-top:0.7rem">Камчатка · радио Земля↔КА</div>
+              <p class="big o3-over" id="o3-ground">—</p>
               <p class="o3-over" id="o3-over" hidden>—</p>
               <div class="o3-sat-grid" role="group" aria-label="Телеметрия трёх КА">
                 <div class="o3-sat-col o3-sat-col--a">
                   <div class="o3-sat-name">КА-A</div>
                   <p class="o3-sat-where" id="o3-a-where">—</p>
                   <dl>
-                    <div><dt>Фаза u</dt><dd id="o3-a-phase">—</dd></div>
+                    <div><dt><span class="term" tabindex="0" data-tip="Фаза (угол u) — где КА на кольце орбиты.">Фаза u</span></dt><dd id="o3-a-phase">—</dd></div>
                     <div><dt>Плоскость</dt><dd id="o3-a-plane">0°</dd></div>
                     <div><dt>Широта</dt><dd id="o3-a-lat">—</dd></div>
                     <div><dt>Долгота</dt><dd id="o3-a-lon">—</dd></div>
@@ -985,19 +993,23 @@
             </div>
             <div class="orbit-callouts">
               <div class="orbit-callout">
-                <strong>Что такое фаза</strong>
-                Фаза u — «где на кольце орбиты» сидит КА. B = A + ~8° в той же плоскости
-                (соседи по витку). C — другая плоскость (RAAN +10°) и своя фаза: это уже сосед «сбоку».
+                <strong>Что такое <span class="term" tabindex="0" data-tip="Фаза (угол u / средняя аномалия) — где КА сидит на кольце своей орбиты.">фаза</span></strong>
+                B = A + ~8° в той же плоскости (соседи по витку). C — другая плоскость
+                (<span class="term" tabindex="0" data-tip="RAAN — долгота восходящего узла: поворот плоскости орбиты.">RAAN</span> +10°)
+                и своя фаза: сосед «сбоку».
               </div>
               <div class="orbit-callout">
                 <strong>Почему Земля режет луч</strong>
-                ≤1000&nbsp;км — условие дальности, но лазер летит по прямой. Если прямая врезается
-                в шар Земли, «в поле зрения» нет — даже при 700–900&nbsp;км. Нужны и дистанция, и LOS над горизонтом.
+                ≤1000&nbsp;км — дальность, но лазер по прямой. Если
+                <span class="term" tabindex="0" data-tip="Прямой отрезок между двумя точками. Если пересекает Землю — связи нет.">хорда</span>
+                врезается в шар, нет
+                <span class="term" tabindex="0" data-tip="Line of Sight — прямая видимость без Земли в луче.">LOS</span>
+                — даже на 700–900&nbsp;км.
               </div>
               <div class="orbit-callout">
-                <strong>Красный луч</strong>
-                Толстая красная трубка = живой ISL + белый «пакет». Тусклая = нет линка
-                (далеко или Земля в хорде). Раньше при фазе 72° линк почти всегда резала планета.
+                <strong>Камчатка: шлюз / терминал / БС</strong>
+                Три точки на полуострове. Луч к КА включается, когда спутник выше ~20° над горизонтом
+                (угол места). Шлюз — feeder в ядро сети; терминал — user; БС — наземная сота у края NTN.
               </div>
             </div>
           </div>
@@ -1011,8 +1023,7 @@
           <p class="section-tag">2D · вся группировка</p>
           <h2>Потом — десятки и сотни КА</h2>
           <p class="block-lead">
-            Выше — 3 КА и лазер. Ниже вся схема фазирования: ~31 vs цель ~252.
-            Дальше можно добавить сигнал Земля→КА→КА→Земля.
+            Выше — 3 КА, лазер и Камчатка (шлюз / терминал / БС). Ниже вся схема: ~31 vs цель ~252.
           </p>
         </div>
 

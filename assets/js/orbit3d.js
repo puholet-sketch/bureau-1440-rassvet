@@ -18,8 +18,12 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
   const elOrbitLen = document.getElementById("o3-orbit-len");
   const elVisNote = document.getElementById("o3-vis-note");
   const elLaser = document.getElementById("o3-laser");
+  const elGround = document.getElementById("o3-ground");
   const playBtn = document.getElementById("o3-play");
   const slowBtn = document.getElementById("o3-slow");
+  const MIN_ELEV_DEG = 20; // минимальный угол места для радио Земля↔КА
+  const _yUp = new THREE.Vector3(0, 1, 0);
+  const _linkDir = new THREE.Vector3();
   const satHud = {
     a: {
       where: document.getElementById("o3-a-where"),
@@ -84,10 +88,10 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
   controls.maxDistance = 36;
   controls.target.set(0, 0, 0);
 
-  /** Весь шар в кадре, Россия чуть к камере */
+  /** Весь шар: РФ + Камчатка к камере */
   function frameFullEarth(earthRotY) {
-    const lat = (28 * Math.PI) / 180;
-    const lon = (95 * Math.PI) / 180 + earthRotY;
+    const lat = (32 * Math.PI) / 180;
+    const lon = (130 * Math.PI) / 180 + earthRotY;
     const dist = EARTH_R * 3.55;
     camera.position.set(
       dist * Math.cos(lat) * Math.sin(lon),
@@ -412,13 +416,16 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
         <p><strong>Оборот:</strong> ~${Math.round(s.periodMin)} мин, путь за виток ${fmtKm(s.orbitLenKm)}, ~${s.speed.toFixed(1)} км/с.</p>
         <p><strong>Над РФ:</strong> непрерывный пролёт ~${s.passMinLo.toFixed(1)}–${s.passMinHi.toFixed(1)} мин
           (${fmtKm(s.passKmLo)}–${fmtKm(s.passKmHi)}); ~${Math.round(s.missFrac * 100)}% ориентаций плоскости РФ не пересекают.</p>
-        <p><strong>Фаза:</strong> положение КА вдоль своей орбитальной окружности (угол u / средняя аномалия).
-          A — опорный; B сдвинут по фазе в <em>той же</em> плоскости; C — другая плоскость (RAAN) + свой фазовый угол.</p>
-        <p><strong>Лазер и Земля:</strong> дальность ≤~${MAX_ISL_KM}&nbsp;км <em>недостаточна</em>. Нужна прямая видимость:
-          хорда КА–КА не должна врезаться в Землю. Даже на 800&nbsp;км луч может идти «сквозь» горизонт планеты —
-          тогда LOS нет. Красная толстая линия = линк жив; тусклая = обрезан дальностью или Землёй.</p>
-        <p><strong>Орбита:</strong> круговой Kepler h=510 км, i=82.3°. Карта — Natural Earth 110m.</p>
+        <p><strong>Фаза:</strong> положение КА вдоль орбиты (угол u). A — опора; B — +фаза в той же плоскости;
+          C — другой RAAN + своя фаза.</p>
+        <p><strong>Лазер ISL:</strong> ≤~${MAX_ISL_KM}&nbsp;км и LOS (хорда без Земли). Красная трубка = линк жив.</p>
+        <p><strong>Камчатка:</strong> на поверхности шлюз (feeder), терминал (user) и БС.
+          Жёлто/голубые лучи — радио Земля↔КА при угле места ≥${MIN_ELEV_DEG}°.</p>
+        <p><strong>Орбита:</strong> Kepler h=510 км, i=82.3°. Карта — Natural Earth 110m.</p>
       `;
+      if (typeof window.applyGlossary === "function") {
+        window.applyGlossary(box);
+      }
     }
   }
 
@@ -431,6 +438,172 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
   earth.rotation.y = 0.15;
   scene.add(earth);
   frameFullEarth(earth.rotation.y);
+
+  /** Локальные координаты на поверхности (без earth.rotation — маркеры children of earth) */
+  function latLonLocal(latDeg, lonDeg, radius) {
+    const lat = (latDeg * Math.PI) / 180;
+    const lon = (lonDeg * Math.PI) / 180;
+    return new THREE.Vector3(
+      radius * Math.cos(lat) * Math.sin(lon),
+      radius * Math.sin(lat),
+      radius * Math.cos(lat) * Math.cos(lon)
+    );
+  }
+
+  function makeLabelSprite(text, color) {
+    const c = document.createElement("canvas");
+    c.width = 256;
+    c.height = 64;
+    const ctx = c.getContext("2d");
+    ctx.clearRect(0, 0, 256, 64);
+    ctx.fillStyle = "rgba(7,10,16,0.82)";
+    ctx.fillRect(8, 12, 240, 40);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(8, 12, 240, 40);
+    ctx.fillStyle = "#fff";
+    ctx.font = "bold 22px Onest, system-ui, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(text, 128, 40);
+    const tex = new THREE.CanvasTexture(c);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    const spr = new THREE.Sprite(
+      new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false })
+    );
+    spr.scale.set(1.15, 0.29, 1);
+    return spr;
+  }
+
+  // Камчатка: шлюз / терминал / БС на поверхности
+  const GROUND_SITES = [
+    {
+      id: "gw",
+      name: "Шлюз",
+      full: "Шлюз (feeder Ka)",
+      lat: 53.05,
+      lon: 158.65,
+      color: 0xe02020,
+      role: "gateway",
+    },
+    {
+      id: "term",
+      name: "Терминал",
+      full: "Терминал (user Ku/Ka)",
+      lat: 52.85,
+      lon: 158.25,
+      color: 0x5ce1ff,
+      role: "terminal",
+    },
+    {
+      id: "bs",
+      name: "БС 5G",
+      full: "Базовая станция",
+      lat: 53.35,
+      lon: 159.1,
+      color: 0xffb020,
+      role: "bs",
+    },
+  ];
+
+  const groundGroup = new THREE.Group();
+  earth.add(groundGroup);
+  const groundMarkers = GROUND_SITES.map((site) => {
+    const g = new THREE.Group();
+    const pos = latLonLocal(site.lat, site.lon, EARTH_R * 1.004);
+    g.position.copy(pos);
+    g.quaternion.setFromUnitVectors(_yUp, pos.clone().normalize());
+
+    const pin = new THREE.Mesh(
+      new THREE.ConeGeometry(0.07, 0.2, 8),
+      new THREE.MeshBasicMaterial({ color: site.color })
+    );
+    pin.position.y = 0.14;
+    g.add(pin);
+
+    const stem = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.025, 0.035, 0.1, 8),
+      new THREE.MeshBasicMaterial({ color: site.color })
+    );
+    stem.position.y = 0.05;
+    g.add(stem);
+
+    const ring = new THREE.Mesh(
+      new THREE.RingGeometry(0.08, 0.15, 28),
+      new THREE.MeshBasicMaterial({
+        color: site.color,
+        transparent: true,
+        opacity: 0.8,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+      })
+    );
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.y = 0.008;
+    g.add(ring);
+
+    const label = makeLabelSprite(site.name, `#${site.color.toString(16).padStart(6, "0")}`);
+    label.position.set(0, 0.38, 0);
+    g.add(label);
+
+    groundGroup.add(g);
+    return { ...site, group: g, world: new THREE.Vector3() };
+  });
+
+  function makeRfLink(color) {
+    const tube = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.018, 0.018, 1, 8, 1, true),
+      new THREE.MeshBasicMaterial({
+        color,
+        transparent: true,
+        opacity: 0.9,
+        depthWrite: false,
+      })
+    );
+    scene.add(tube);
+    const pulse = new THREE.Mesh(
+      new THREE.SphereGeometry(0.05, 10, 10),
+      new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.95 })
+    );
+    scene.add(pulse);
+    return { tube, pulse, color };
+  }
+  const rfLinks = groundMarkers.map((m) =>
+    makeRfLink(m.role === "gateway" ? 0xff6060 : m.role === "bs" ? 0xffb020 : 0x7af0ff)
+  );
+
+  function elevationDeg(gsWorld, satWorld) {
+    const up = gsWorld.clone().normalize();
+    const toSat = satWorld.clone().sub(gsWorld);
+    const dist = toSat.length();
+    if (dist < 1e-6) return -90;
+    toSat.multiplyScalar(1 / dist);
+    return (Math.asin(THREE.MathUtils.clamp(up.dot(toSat), -1, 1)) * 180) / Math.PI;
+  }
+
+  function updateRfLink(link, from, to, active, phase) {
+    if (!active) {
+      link.tube.visible = false;
+      link.pulse.visible = false;
+      return;
+    }
+    _linkDir.subVectors(to, from);
+    const len = _linkDir.length();
+    if (len < 1e-6) {
+      link.tube.visible = false;
+      link.pulse.visible = false;
+      return;
+    }
+    const mid = from.clone().add(to).multiplyScalar(0.5);
+    link.tube.visible = true;
+    link.tube.position.copy(mid);
+    link.tube.scale.set(1, len, 1);
+    link.tube.quaternion.setFromUnitVectors(_yUp, _linkDir.normalize());
+    link.tube.material.opacity = 0.92;
+    link.tube.material.color.set(link.color);
+    link.pulse.visible = true;
+    const t = (phase % 1 + 1) % 1;
+    link.pulse.position.lerpVectors(from, to, t);
+  }
 
   scene.add(
     new THREE.Mesh(
@@ -525,8 +698,6 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
   scene.add(arrowG, arrowV, arrowD);
 
   // Жирный лазер (цилиндр — LineBasic linewidth в WebGL почти не работает)
-  const _yUp = new THREE.Vector3(0, 1, 0);
-  const _linkDir = new THREE.Vector3();
   function makeLaserLink() {
     const tube = new THREE.Mesh(
       new THREE.CylinderGeometry(0.028, 0.028, 1, 10, 1, true),
@@ -782,6 +953,41 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
         });
         elLaser.textContent = `${activeLinks.length}/3 · ${parts.join(" · ")}`;
         elLaser.dataset.zone = "ru";
+      }
+    }
+
+    // Радио Земля↔КА (Камчатка): угол места ≥ MIN_ELEV_DEG к ближайшему КА
+    const sats = [
+      { name: "A", pos: A.pos },
+      { name: "B", pos: B.pos },
+      { name: "C", pos: C.pos },
+    ];
+    const groundActive = [];
+    groundMarkers.forEach((m, idx) => {
+      m.group.getWorldPosition(m.world);
+      let best = null;
+      for (const s of sats) {
+        const elev = elevationDeg(m.world, s.pos);
+        const distKm = m.world.distanceTo(s.pos) / SCALE;
+        if (elev >= MIN_ELEV_DEG && (!best || elev > best.elev)) {
+          best = { sat: s.name, elev, distKm, pos: s.pos };
+        }
+      }
+      const on = !!best;
+      updateRfLink(rfLinks[idx], m.world, on ? best.pos : m.world, on, pulseT + idx * 0.2);
+      if (on) {
+        groundActive.push(
+          `${m.name}↔${best.sat} · el ${best.elev.toFixed(0)}° · ${Math.round(best.distKm)} км`
+        );
+      }
+    });
+    if (elGround) {
+      if (!groundActive.length) {
+        elGround.textContent = `Камчатка: нет КА выше ${MIN_ELEV_DEG}° (ждём пролёт)`;
+        elGround.dataset.zone = "out";
+      } else {
+        elGround.textContent = groundActive.join(" · ");
+        elGround.dataset.zone = "ru";
       }
     }
 
