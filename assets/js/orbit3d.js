@@ -709,7 +709,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
   // Жирный лазер (цилиндр — LineBasic linewidth в WebGL почти не работает)
   function makeLaserLink() {
     const tube = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.028, 0.028, 1, 10, 1, true),
+      new THREE.CylinderGeometry(0.011, 0.011, 1, 8, 1, true),
       new THREE.MeshBasicMaterial({
         color: 0xe02020,
         transparent: true,
@@ -719,22 +719,22 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
     );
     scene.add(tube);
     const glow = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.055, 0.055, 1, 10, 1, true),
+      new THREE.CylinderGeometry(0.022, 0.022, 1, 8, 1, true),
       new THREE.MeshBasicMaterial({
         color: 0xff4a4a,
         transparent: true,
-        opacity: 0.28,
+        opacity: 0.22,
         depthWrite: false,
       })
     );
     scene.add(glow);
     const pulse = new THREE.Mesh(
-      new THREE.SphereGeometry(0.07, 12, 12),
+      new THREE.SphereGeometry(0.04, 10, 10),
       new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1 })
     );
     scene.add(pulse);
     const pulse2 = new THREE.Mesh(
-      new THREE.SphereGeometry(0.055, 10, 10),
+      new THREE.SphereGeometry(0.032, 8, 8),
       new THREE.MeshBasicMaterial({ color: 0xff8080, transparent: true, opacity: 0.95 })
     );
     scene.add(pulse2);
@@ -826,8 +826,8 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
     link.glow.visible = true;
     link.tube.position.copy(mid);
     link.glow.position.copy(mid);
-    link.tube.scale.set(active ? 1.15 : 0.55, len, active ? 1.15 : 0.55);
-    link.glow.scale.set(active ? 1 : 0.45, len, active ? 1 : 0.45);
+    link.tube.scale.set(active ? 1 : 0.45, len, active ? 1 : 0.45);
+    link.glow.scale.set(active ? 1 : 0.4, len, active ? 1 : 0.4);
     link.tube.quaternion.setFromUnitVectors(_yUp, _linkDir.normalize());
     link.glow.quaternion.copy(link.tube.quaternion);
     link.tube.material.opacity = active ? 0.98 : 0.14;
