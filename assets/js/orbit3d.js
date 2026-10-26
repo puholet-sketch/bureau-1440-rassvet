@@ -74,9 +74,9 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x070a10);
-  scene.fog = new THREE.FogExp2(0x070a10, 0.018);
+  scene.fog = new THREE.FogExp2(0x070a10, 0.012);
 
-  const camera = new THREE.PerspectiveCamera(42, 1, 0.01, 120);
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.01, 120);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -85,8 +85,8 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
-  controls.minDistance = 11;
-  controls.maxDistance = 36;
+  controls.minDistance = EARTH_R * 2.05;
+  controls.maxDistance = EARTH_R * 7.5;
   controls.target.set(0, 0, 0);
 
   /**
@@ -107,10 +107,9 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
     return local.clone().applyAxisAngle(_yUp, earthRotY);
   }
 
-  /** Весь шар, Камчатка (восток) к камере */
+  /** Шар заполняет кадр; Камчатка / восток РФ к камере */
   function frameFullEarth(earthRotY) {
-    const cam = applyEarthSpin(geoToLocal(42, 165, EARTH_R * 3.55), earthRotY);
-    cam.y += EARTH_R * 0.2;
+    const cam = applyEarthSpin(geoToLocal(54, 162, EARTH_R * 2.55), earthRotY);
     camera.position.copy(cam);
     controls.target.set(0, 0, 0);
     controls.update();

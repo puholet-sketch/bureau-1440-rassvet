@@ -418,13 +418,17 @@ body {
 }
 
 .orbit-stage--3d {
-  min-height: 480px;
+  min-height: min(78vh, 740px);
+  height: min(78vh, 740px);
+  display: flex;
+  flex-direction: column;
 }
 
 .orbit3d-root {
+  flex: 1 1 auto;
   width: 100%;
-  height: min(62vh, 560px);
-  min-height: 420px;
+  height: 100%;
+  min-height: min(72vh, 700px);
   background: #070a10;
 }
 
@@ -432,6 +436,17 @@ body {
   display: block;
   width: 100% !important;
   height: 100% !important;
+}
+
+@media (max-width: 900px) {
+  .orbit-stage--3d {
+    min-height: min(70vh, 560px);
+    height: min(70vh, 560px);
+  }
+
+  .orbit3d-root {
+    min-height: min(64vh, 520px);
+  }
 }
 
 .o3-telemetry {
@@ -698,12 +713,13 @@ body {
 .orbit-hud {
   position: absolute;
   left: 0.75rem;
-  bottom: 2.4rem;
+  bottom: 0.75rem;
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
   max-width: min(36rem, calc(100% - 1.5rem));
   pointer-events: none;
+  z-index: 2;
 }
 
 .hud-chip {
