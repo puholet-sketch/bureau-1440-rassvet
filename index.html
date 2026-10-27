@@ -1053,20 +1053,21 @@
 
         <div class="block-head block-head--follow">
           <p class="section-tag">2D · вся группировка</p>
-          <h2>Потом — десятки и сотни КА</h2>
+          <h2>Покрытие России: ~31 против цели ~252</h2>
           <p class="block-lead">
-            Та же модель численности (~31 / ~252), что и в 3D выше. Здесь — покрытие РФ пятнами связи.
+            Большой шар — Земля, лицом к зрителю Россия (красная территория). Белые точки снаружи —
+            спутники на орбите. Янтарные точки на РФ — зона, где сейчас есть КА; тёмные — слепая зона.
           </p>
         </div>
 
         <div class="orbit-shell">
           <div class="orbit-stage">
-            <canvas id="orbit-canvas" width="900" height="560" aria-label="2D модель группировки Рассвет"></canvas>
+            <canvas id="orbit-canvas" width="900" height="560" aria-label="2D модель группировки Рассвет над Россией"></canvas>
             <aside class="orbit-hud" aria-label="Как читать 2D">
-              <span class="hud-chip"><i class="hud-dot hud-dot--sat"></i> Точки — КА «Рассвет»</span>
-              <span class="hud-chip"><i class="hud-dot hud-dot--laser"></i> Mesh</span>
-              <span class="hud-chip"><i class="hud-dot hud-dot--foot"></i> Пятна связи</span>
-              <span class="hud-chip"><i class="hud-dot hud-dot--ru"></i> Россия</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--ru"></i> Красное — территория РФ</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--sat"></i> Белые — КА на орбите</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--foot"></i> Янтарь на РФ — есть покрытие</span>
+              <span class="hud-chip"><i class="hud-dot hud-dot--laser"></i> Голубые линии — mesh</span>
             </aside>
             <p class="orbit-live">В кадре: <strong id="orbit-count">—</strong></p>
           </div>
