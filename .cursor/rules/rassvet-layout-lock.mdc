@@ -1,0 +1,22 @@
+---
+description: Публичный сайт bureau-1440-rassvet — каркас, шрифты, без md-ссылок
+globs: bureau-1440-rassvet/**/*.{html,css,js,md}
+alwaysApply: false
+---
+
+# Рассвет site — layout lock
+
+Читать `LAYOUT.md` в корне сайта. База: `educational-sites-style` (ОУД4).
+
+## Обязательно
+
+- Отступы только через `--space-*` / классы `.block`, `.block-head`, `.orbit-*`
+- Шрифты: Unbounded = заголовки/цифры; Onest = текст. Третий стек не вводить
+- На публичном `index.html` **не** ставить ссылки `docs/*.md` и `data/*.json`
+- Новые блоки = новый класс в `layout-lock.css` / `theme-orbit.css`, не inline style
+
+## Анти-паттерны
+
+- «Полный разбор: finance.md»
+- Разовые `style="margin-top: 2rem"`
+- Свои max-width мимо `--shell`

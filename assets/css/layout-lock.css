@@ -1,0 +1,181 @@
+/* Жёсткий ритм секций — поверх style.css + theme-orbit.css.
+   Не добавлять разовые margin/padding в HTML. */
+
+:root {
+  --space-1: 0.5rem;
+  --space-2: 0.85rem;
+  --space-3: 1.25rem;
+  --space-4: 2rem;
+  --space-5: 3rem;
+  --space-section: clamp(2.5rem, 5vw, 3.75rem);
+}
+
+/* Один текстовый поток */
+body,
+.block-lead,
+.orbit-callout,
+.problem-card p,
+.note,
+.challenge span,
+.o3-vis-note,
+.foot {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.section-tag,
+.hero-kicker,
+.block-head .hero-kicker {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ember);
+  margin: 0 0 var(--space-2);
+}
+
+.block-head h2,
+.hero h1,
+.section-ink h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--ink);
+  margin: 0 0 var(--space-2);
+}
+
+.block-lead {
+  margin: 0;
+  max-width: 62ch;
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+/* Секции — одинаковый вертикальный шаг */
+.block,
+.orbit-theater,
+.section-ink {
+  padding-top: var(--space-section);
+  padding-bottom: var(--space-section);
+}
+
+.block-head {
+  margin-bottom: var(--space-4);
+}
+
+.block-head--follow {
+  margin-top: var(--space-5);
+}
+
+.block-head + *,
+.orbit-shell,
+.o3-constellation-card {
+  margin-top: 0;
+}
+
+/* Убрать «плавающие» инлайн-отступы между блоками внутри секции */
+.block > * + *,
+.orbit-theater > * + *,
+.orbit-side > * + *,
+.orbit-callouts > * + * {
+  margin-top: var(--space-3);
+}
+
+.block-head > * + *,
+.orbit-metric > * + * {
+  margin-top: var(--space-2);
+}
+
+.block-head > *:first-child,
+.orbit-metric > *:first-child {
+  margin-top: 0;
+}
+
+/* Заметки внизу секции — тихо, без файловых ссылок */
+.note,
+.block-note {
+  margin-top: var(--space-3);
+  margin-bottom: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.note a,
+.block-note a,
+.section-ink a {
+  color: var(--ember);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(251, 90, 90, 0.35);
+}
+
+.note a:hover,
+.block-note a:hover {
+  border-bottom-color: var(--ember);
+}
+
+/* Сетки фактов — равные колонки и зазор */
+.problem-grid,
+.env-grid,
+.challenge-grid,
+.dir-grid {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.orbit-callouts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.orbit-callout {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-left: 2px solid var(--crimson);
+  background: rgba(7, 10, 16, 0.35);
+}
+
+.orbit-callout strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ember);
+  margin-bottom: 0.35rem;
+}
+
+/* Цифры телеметрии — display, подписи — body */
+.o3-telemetry dt,
+.o3-sat-col dt {
+  font-family: var(--font-body);
+}
+
+.o3-telemetry dd,
+.o3-sat-col dd,
+.orbit-metric .big {
+  font-family: var(--font-display);
+}
+
+/* Термины — не «синие ссылки» */
+.term {
+  color: inherit;
+  border-bottom: 1px dotted rgba(251, 90, 90, 0.65);
+  text-decoration: none;
+  cursor: help;
+}
+
+.foot {
+  padding: var(--space-4) var(--gutter);
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--muted);
+  border-top: 1px solid var(--line);
+}
