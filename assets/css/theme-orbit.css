@@ -1307,7 +1307,11 @@ body {
 .block--tint > .block-note,
 .block--tint > .dev-stats,
 .block--tint > .dir-grid,
-.block--tint > .card {
+.block--tint > .card,
+.block--tint > .ttx-table,
+.block--tint > .table-scroll,
+.block--tint > .sat-layout,
+.block--tint > .ownership-card {
   max-width: var(--shell);
   width: 100%;
   margin-left: auto;

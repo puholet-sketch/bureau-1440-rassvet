@@ -152,6 +152,34 @@ body,
   margin-bottom: 0.35rem;
 }
 
+/* Таблицы в одной колонке с заголовками секции */
+.ttx-table {
+  table-layout: fixed;
+  width: 100%;
+  margin: 0;
+}
+
+.ttx-table th,
+.ttx-table td {
+  padding: 0.55rem 0.65rem;
+  vertical-align: top;
+  word-wrap: break-word;
+}
+
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  margin: 0;
+}
+
+.section-label {
+  margin: var(--space-4) 0 var(--space-2);
+}
+
+.block .card > p:last-child {
+  margin-bottom: 0;
+}
+
 /* Цифры телеметрии — display, подписи — body */
 .o3-telemetry dt,
 .o3-sat-col dt {

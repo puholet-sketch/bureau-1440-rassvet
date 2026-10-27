@@ -566,7 +566,10 @@ body {
 .block--tint .challenge-list,
 .block--tint .block-note,
 .block--tint .dev-stats,
-.block--tint .dir-grid {
+.block--tint .dir-grid,
+.block--tint .card,
+.block--tint .ttx-table,
+.block--tint .table-scroll {
   max-width: 1200px;
   width: 100%;
   margin-left: auto;
