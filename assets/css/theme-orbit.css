@@ -1241,20 +1241,8 @@ body {
   flex-direction: column;
 }
 
-.sat-legend {
-  margin: 0;
-  padding: 0.75rem 1rem;
-  border-top: 1px solid var(--line);
-  background: rgba(7, 10, 16, 0.45);
-  line-height: 1.6;
-}
-
 .sat-diagram svg {
-  background: #121a28;
-}
-
-.sat-diagram svg rect[width="640"] {
-  fill: #121a28;
+  background: #0c121c;
 }
 
 @media (prefers-reduced-motion: reduce) {
