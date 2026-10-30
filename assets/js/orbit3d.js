@@ -20,9 +20,9 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
   const elLaser = document.getElementById("o3-laser");
   const elGround = document.getElementById("o3-ground");
   const elGroundVals = {
-    Шлюз: document.getElementById("o3-g-gw"),
-    Терминал: document.getElementById("o3-g-term"),
-    БС: document.getElementById("o3-g-bs"),
+    gw: document.getElementById("o3-g-gw"),
+    term: document.getElementById("o3-g-term"),
+    bs: document.getElementById("o3-g-bs"),
   };
   const playBtn = document.getElementById("o3-play");
   const slowBtn = document.getElementById("o3-slow");
@@ -1152,7 +1152,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
       });
       const on = !!best;
       updateRfLink(rfLinks[idx], m.world, on ? best.pos : m.world, on, pulseT + idx * 0.2);
-      const cell = elGroundVals[m.name];
+      const cell = elGroundVals[m.id];
       const row = cell?.closest("li");
       if (on) {
         anyGround = true;
