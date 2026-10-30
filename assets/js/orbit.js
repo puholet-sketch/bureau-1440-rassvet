@@ -70,11 +70,11 @@
     const ex = Math.cos(φ) * Math.cos(λ);
     const ey = Math.cos(φ) * Math.sin(λ);
     const ez = Math.sin(φ);
-    const c = Math.cos(VIEW_LON);
-    const s = Math.sin(VIEW_LON);
-    const xv = -ex * s + ey * c;
+    const cosV = Math.cos(VIEW_LON);
+    const sinV = Math.sin(VIEW_LON);
+    const xv = -ex * sinV + ey * cosV;
     const yv = ez;
-    const zv = ex * c + ey * s;
+    const zv = ex * cosV + ey * sinV;
     return { x: CX + R * xv, y: CY - R * yv, z: zv, visible: zv > -0.02 };
   }
 
@@ -119,11 +119,11 @@
     const ex = cosO * cosu - sinO * sinu * cosi;
     const ey = sinO * cosu + cosO * sinu * cosi;
     const ez = sinu * sini;
-    const c = Math.cos(VIEW_LON);
-    const s = Math.sin(VIEW_LON);
-    const xv = -ex * s + ey * c;
+    const cosV = Math.cos(VIEW_LON);
+    const sinV = Math.sin(VIEW_LON);
+    const xv = -ex * sinV + ey * cosV;
     const yv = ez;
-    const zv = ex * c + ey * s;
+    const zv = ex * cosV + ey * sinV;
     const alt = R * 1.22;
     return {
       x: CX + alt * xv,
