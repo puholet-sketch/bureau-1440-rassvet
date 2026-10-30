@@ -19,6 +19,11 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
   const elVisNote = document.getElementById("o3-vis-note");
   const elLaser = document.getElementById("o3-laser");
   const elGround = document.getElementById("o3-ground");
+  const elGroundVals = {
+    Шлюз: document.getElementById("o3-g-gw"),
+    Терминал: document.getElementById("o3-g-term"),
+    БС: document.getElementById("o3-g-bs"),
+  };
   const playBtn = document.getElementById("o3-play");
   const slowBtn = document.getElementById("o3-slow");
   const MIN_ELEV_DEG = 20; // минимальный угол места для радио Земля↔КА
@@ -1108,8 +1113,8 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
     }
 
     if (elLaser) {
+      let laserTxt;
       if (!linkOn) {
-        // При 10–21 КА/плоскость сосед дальше потолка тестов (~1005 км) — лазеры видны в «Учебные 3»
         let nearestKm = Infinity;
         pairs.forEach(([i, j]) => {
           const d = placed[i].pos.distanceTo(placed[j].pos) / SCALE;
@@ -1117,20 +1122,24 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
         });
         const nearTxt =
           Number.isFinite(nearestKm) && nearestKm < 1e8
-            ? ` · ближайший сосед ~${Math.round(nearestKm)} км`
+            ? ` · сосед ~${Math.round(nearestKm)} км`
             : "";
-        elLaser.textContent =
+        laserTxt =
           fleetMode === "demo"
-            ? `0 ISL из ${pairs.length} (≤${MAX_ISL_KM} км + LOS)`
-            : `0 ISL: шаг фазы слишком велик для ≤${MAX_ISL_KM} км${nearTxt} · см. «Учебные 3»`;
+            ? `0 / ${pairs.length} ISL (≤${MAX_ISL_KM} км)`
+            : `0 ISL · шаг фазы велик${nearTxt}`;
         elLaser.dataset.zone = "out";
       } else {
-        elLaser.textContent = `${linkOn}/${pairs.length} ISL · напр. ${linkSample}`;
+        laserTxt = `${linkOn}/${pairs.length} ISL · ${linkSample}`;
         elLaser.dataset.zone = "ru";
+      }
+      if (elLaser.textContent !== laserTxt) {
+        elLaser.textContent = laserTxt;
+        elLaser.title = laserTxt;
       }
     }
 
-    const groundActive = [];
+    let anyGround = false;
     groundMarkers.forEach((m, idx) => {
       m.group.getWorldPosition(m.world);
       let best = null;
@@ -1143,21 +1152,19 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
       });
       const on = !!best;
       updateRfLink(rfLinks[idx], m.world, on ? best.pos : m.world, on, pulseT + idx * 0.2);
+      const cell = elGroundVals[m.name];
+      const row = cell?.closest("li");
       if (on) {
-        groundActive.push(
-          `${m.name}↔${best.sat} · el ${best.elev.toFixed(0)}° · ${Math.round(best.distKm)} км`
-        );
+        anyGround = true;
+        const txt = `↔${best.sat} · ${best.elev.toFixed(0)}° · ${Math.round(best.distKm)} км`;
+        if (cell && cell.textContent !== txt) cell.textContent = txt;
+        if (row) row.dataset.on = "1";
+      } else {
+        if (cell && cell.textContent !== "нет связи") cell.textContent = "нет связи";
+        if (row) row.dataset.on = "0";
       }
     });
-    if (elGround) {
-      if (!groundActive.length) {
-        elGround.textContent = `Камчатка: нет КА выше ${MIN_ELEV_DEG}° (ждём пролёт)`;
-        elGround.dataset.zone = "out";
-      } else {
-        elGround.textContent = groundActive.join(" · ");
-        elGround.dataset.zone = "ru";
-      }
-    }
+    if (elGround) elGround.dataset.zone = anyGround ? "ru" : "out";
 
     controls.update();
     renderer.render(scene, camera);
