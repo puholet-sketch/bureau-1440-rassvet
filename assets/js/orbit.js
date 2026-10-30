@@ -60,27 +60,30 @@
   let playing = true;
   let sats = [];
 
-  // Центр кадра ≈ Сибирь: Россия лицом к зрителю, крупно
+  // Центр кадра ≈ Сибирь (lon 100°E) лицом к камере
   const VIEW_LON = (100 * Math.PI) / 180;
 
   function project(lat, lon) {
     const φ = (lat * Math.PI) / 180;
     const λ = (lon * Math.PI) / 180;
-    const x0 = Math.cos(φ) * Math.sin(λ);
-    const y0 = Math.sin(φ);
-    const z0 = Math.cos(φ) * Math.cos(λ);
-    const xv = x0 * Math.cos(VIEW_LON) + z0 * Math.sin(VIEW_LON);
-    const yv = y0;
-    const zv = -x0 * Math.sin(VIEW_LON) + z0 * Math.cos(VIEW_LON);
-    return { x: CX + R * xv, y: CY - R * yv, z: zv, visible: zv > -0.05 };
+    // ECEF-like: X=cosφ cosλ, Y=cosφ sinλ, Z=sinφ → к экрану так, что lon=VIEW_LON даёт zv>0
+    const ex = Math.cos(φ) * Math.cos(λ);
+    const ey = Math.cos(φ) * Math.sin(λ);
+    const ez = Math.sin(φ);
+    const c = Math.cos(VIEW_LON);
+    const s = Math.sin(VIEW_LON);
+    const xv = -ex * s + ey * c;
+    const yv = ez;
+    const zv = ex * c + ey * s;
+    return { x: CX + R * xv, y: CY - R * yv, z: zv, visible: zv > -0.02 };
   }
 
-  // Контур РФ плотнее — читаемая «красная страна», не точка
+  // Упрощённый контур РФ — крупный красный силуэт на лицевой стороне шара
   const RU_OUTLINE = [
-    [70, 28], [69, 40], [70, 55], [72, 70], [74, 90], [75, 110], [73, 130],
-    [72, 150], [70, 170], [68, 180], [64, 178], [60, 170], [56, 160],
-    [52, 145], [50, 140], [48, 135], [46, 132], [49, 100], [51, 70],
-    [53, 50], [55, 40], [58, 35], [62, 30], [66, 28], [70, 28],
+    [68, 30], [70, 40], [71, 55], [72, 70], [73, 90], [74, 110], [73, 130],
+    [72, 145], [70, 160], [68, 170], [66, 178], [62, 175], [58, 165],
+    [55, 155], [52, 145], [50, 140], [48, 135], [47, 130], [48, 110],
+    [50, 90], [51, 70], [52, 55], [54, 42], [56, 35], [60, 30], [64, 28], [68, 30],
   ];
 
   const SAMPLE = [];
@@ -112,23 +115,27 @@
     const sini = Math.sin(s.iRad);
     const cosO = Math.cos(s.raan);
     const sinO = Math.sin(s.raan);
-    const x = cosO * cosu - sinO * sinu * cosi;
-    const y = sinO * cosu + cosO * sinu * cosi;
-    const z = sinu * sini;
-    const xv = y * Math.cos(VIEW_LON) + x * Math.sin(VIEW_LON);
-    const yv = z;
-    const zv = -y * Math.sin(VIEW_LON) + x * Math.cos(VIEW_LON);
+    // Орбитальная ECEF: X/Y в экваторе, Z к северу; lon = atan2(Y,X)
+    const ex = cosO * cosu - sinO * sinu * cosi;
+    const ey = sinO * cosu + cosO * sinu * cosi;
+    const ez = sinu * sini;
+    const c = Math.cos(VIEW_LON);
+    const s = Math.sin(VIEW_LON);
+    const xv = -ex * s + ey * c;
+    const yv = ez;
+    const zv = ex * c + ey * s;
     const alt = R * 1.22;
     return {
       x: CX + alt * xv,
       y: CY - alt * yv,
       z: zv,
-      lat: (Math.asin(Math.max(-1, Math.min(1, z))) * 180) / Math.PI,
-      lon: (((Math.atan2(y, x) * 180) / Math.PI) + 360) % 360,
+      lat: (Math.asin(Math.max(-1, Math.min(1, ez))) * 180) / Math.PI,
+      lon: (((Math.atan2(ey, ex) * 180) / Math.PI) + 360) % 360,
       front: zv > -0.15,
     };
   }
 
+  // Угловой радиус пятна ~R_foot/R_earth; R≈885 км → ~0.14 рад. Без ×3.2 — иначе «сейчас» даёт ложные 100%.
   const FOOT_ANGLE = 0.14;
 
   function coversPoint(sat, lat, lon) {
@@ -139,7 +146,7 @@
     const d =
       Math.sin(φ1) * Math.sin(φ2) +
       Math.cos(φ1) * Math.cos(φ2) * Math.cos(λ1 - λ2);
-    return Math.acos(Math.min(1, Math.max(-1, d))) < FOOT_ANGLE * 3.2;
+    return Math.acos(Math.min(1, Math.max(-1, d))) < FOOT_ANGLE;
   }
 
   function setMode(id) {
@@ -243,23 +250,18 @@
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      // Россия — заливка территории
-      ctx.beginPath();
-      let started = false;
-      RU_OUTLINE.forEach(([lat, lon]) => {
-        const p = project(lat, lon);
-        if (!p.visible) return;
-        if (!started) {
-          ctx.moveTo(p.x, p.y);
-          started = true;
-        } else ctx.lineTo(p.x, p.y);
-      });
-      ctx.closePath();
-      ctx.fillStyle = "rgba(224, 40, 40, 0.55)";
-      ctx.fill();
-      ctx.strokeStyle = "#fb5a5a";
-      ctx.lineWidth = 2.25;
-      ctx.stroke();
+      // Россия — заливка (все вершины: клип шара обрежет край)
+      const ruPts = RU_OUTLINE.map(([lat, lon]) => project(lat, lon)).filter((p) => p.z > -0.25);
+      if (ruPts.length >= 3) {
+        ctx.beginPath();
+        ruPts.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+        ctx.closePath();
+        ctx.fillStyle = "rgba(224, 32, 32, 0.72)";
+        ctx.fill();
+        ctx.strokeStyle = "#ff6b6b";
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+      }
     });
 
     // Обводка шара
@@ -269,10 +271,10 @@
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    // Подпись России — к центру территории (не на краю)
-    const ruLabel = project(62, 95);
+    // Подпись России — центр Сибири
+    const ruLabel = project(62, 100);
     if (ruLabel.visible) {
-      chip(ruLabel.x - 36, ruLabel.y - 11, "Россия", "rgba(160,16,16,0.92)");
+      chip(ruLabel.x - 36, ruLabel.y - 11, "Россия", "rgba(160,16,16,0.95)");
     }
 
     const eqLabel = project(0, 100);

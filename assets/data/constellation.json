@@ -1,0 +1,52 @@
+{
+  "as_of": "2026-10-26",
+  "disclaimer": "Точные RAAN и фазы лётной серии публично не раскрыты. Числа КА — по открытым сводкам досье; раскладка плоскостей — учебная Walker-like модель для визуализации (как в 2D-блоке).",
+  "orbit": {
+    "alt_working_km": 510,
+    "alt_marketing_km": 800,
+    "alt_insertion_km": 300,
+    "inclination_deg": 82.3,
+    "period_min": 94.7,
+    "speed_km_s": 7.6,
+    "note": "Серия по трекингу ~510 км, i≈82.3°; маркетинг часто называет ~800 км."
+  },
+  "isl": {
+    "range_tested_km": { "min": 30, "max": 1005 },
+    "rate_gbps_qualified": 10
+  },
+  "current": {
+    "label": "Сейчас (серия)",
+    "active_approx": 31,
+    "enough_for_russia_24_7": false,
+    "model": {
+      "planes": 3,
+      "per_plane": 10,
+      "raan_step_deg": 120,
+      "phase_step_deg": 36,
+      "odd_plane_phase_offset": true,
+      "total": 30,
+      "note": "3×10=30 (+1 в сводках «~31»); шаг фазы 360°/10; плоскости через 120° RAAN."
+    }
+  },
+  "target_company": {
+    "label": "Цель компании",
+    "active_approx": 252,
+    "model": {
+      "planes": 12,
+      "per_plane": 21,
+      "raan_step_deg": 30,
+      "phase_step_deg": 17.14,
+      "odd_plane_phase_offset": true,
+      "total": 252
+    }
+  },
+  "gov_plan": {
+    "label": "Госплан",
+    "active": 292,
+    "launches_to_2030": 383
+  },
+  "demo_triplet": {
+    "label": "Учебные 3 КА",
+    "note": "Соседи в зоне ISL ≤~1000 км для разбора лазера и Камчатки."
+  }
+}

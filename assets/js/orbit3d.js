@@ -1109,7 +1109,20 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
     if (elLaser) {
       if (!linkOn) {
-        elLaser.textContent = `0 ISL из ${pairs.length} кандидатов (дальность≤${MAX_ISL_KM} км + LOS)`;
+        // При 10–21 КА/плоскость сосед дальше потолка тестов (~1005 км) — лазеры видны в «Учебные 3»
+        let nearestKm = Infinity;
+        pairs.forEach(([i, j]) => {
+          const d = placed[i].pos.distanceTo(placed[j].pos) / SCALE;
+          if (d < nearestKm) nearestKm = d;
+        });
+        const nearTxt =
+          Number.isFinite(nearestKm) && nearestKm < 1e8
+            ? ` · ближайший сосед ~${Math.round(nearestKm)} км`
+            : "";
+        elLaser.textContent =
+          fleetMode === "demo"
+            ? `0 ISL из ${pairs.length} (≤${MAX_ISL_KM} км + LOS)`
+            : `0 ISL: шаг фазы слишком велик для ≤${MAX_ISL_KM} км${nearTxt} · см. «Учебные 3»`;
         elLaser.dataset.zone = "out";
       } else {
         elLaser.textContent = `${linkOn}/${pairs.length} ISL · напр. ${linkSample}`;
