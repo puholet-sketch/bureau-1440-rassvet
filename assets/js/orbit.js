@@ -135,8 +135,8 @@
     };
   }
 
-  // Угловой радиус пятна ~R_foot/R_earth; R≈885 км → ~0.14 рад. Без ×3.2 — иначе «сейчас» даёт ложные 100%.
-  const FOOT_ANGLE = 0.14;
+  // Пятно ~0.10 рад ≈ умеренный user-beam; раньше ×3.2 давало ложные ~100% на «сейчас».
+  const FOOT_ANGLE = 0.1;
 
   function coversPoint(sat, lat, lon) {
     const φ1 = (sat.lat * Math.PI) / 180;
@@ -250,16 +250,16 @@
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      // Россия — заливка (все вершины: клип шара обрежет край)
+      // Россия — яркая заливка (янтарь поверх не должен её «съесть»)
       const ruPts = RU_OUTLINE.map(([lat, lon]) => project(lat, lon)).filter((p) => p.z > -0.25);
       if (ruPts.length >= 3) {
         ctx.beginPath();
         ruPts.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
         ctx.closePath();
-        ctx.fillStyle = "rgba(224, 32, 32, 0.72)";
+        ctx.fillStyle = "rgba(200, 28, 28, 0.88)";
         ctx.fill();
-        ctx.strokeStyle = "#ff6b6b";
-        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = "#ff7a7a";
+        ctx.lineWidth = 2.75;
         ctx.stroke();
       }
     });
@@ -316,16 +316,32 @@
   }
 
   function drawCoverageOnRussia(positions) {
-    // Янтарные точки только НА территории РФ — видно, закрыта ли страна
+    // Точки поверх красной РФ: янтарь = есть КА, тёмно-бордовые = слепая зона
     SAMPLE.forEach((pt) => {
       const pr = project(pt.lat, pt.lon);
       if (!pr.visible) return;
       const ok = positions.some((p) => coversPoint(p, pt.lat, pt.lon));
       ctx.beginPath();
-      ctx.arc(pr.x, pr.y, ok ? 3.2 : 2.2, 0, Math.PI * 2);
-      ctx.fillStyle = ok ? "rgba(255,176,32,0.85)" : "rgba(80,30,30,0.55)";
+      ctx.arc(pr.x, pr.y, ok ? 2.6 : 2.0, 0, Math.PI * 2);
+      ctx.fillStyle = ok ? "rgba(255, 196, 64, 0.92)" : "rgba(40, 8, 8, 0.75)";
       ctx.fill();
+      if (!ok) {
+        ctx.strokeStyle = "rgba(255, 120, 120, 0.35)";
+        ctx.lineWidth = 0.75;
+        ctx.stroke();
+      }
     });
+  }
+
+  function strokeRussiaOutline() {
+    const ruPts = RU_OUTLINE.map(([lat, lon]) => project(lat, lon)).filter((p) => p.z > -0.25);
+    if (ruPts.length < 3) return;
+    ctx.beginPath();
+    ruPts.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+    ctx.closePath();
+    ctx.strokeStyle = "rgba(255, 140, 140, 0.95)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
   }
 
   function drawSat(pos, highlight) {
@@ -358,6 +374,7 @@
     const visible = positions.slice(0, showN);
 
     drawCoverageOnRussia(visible);
+    strokeRussiaOutline();
 
     // Mesh только между ближними КА на переднем плане
     const front = visible.filter((p) => p.front);
